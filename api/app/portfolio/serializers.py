@@ -5,16 +5,16 @@ from core.models import Stock, Portfolio, WatchList, Transaction
 class TransactionSerializer(serializers.ModelSerializer):
 	"""Serializer for transaction objects"""
 	stock = serializers.StringRelatedField()
+	portfolio = serializers.StringRelatedField()
 	class Meta:
 		model = Transaction
-		fields = ('id', 'is_buy', 'price_per_share', 'number_of_shares', 'stock')
+		fields = ('id', 'is_buy', 'price_per_share', 'number_of_shares', 'stock', 'portfolio')
 
 
 class PortfolioSerializer(serializers.ModelSerializer):
 	"""Serializer for Portfolio objects"""
 	holdings = serializers.StringRelatedField(many=True)
 
-	
 	class Meta:
 		model = Portfolio
 		fields = ('id', 'name', 'balance', 'holdings')

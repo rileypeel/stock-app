@@ -10,7 +10,8 @@ from portfolio import serializers
 
 
 class ListStocks(APIView):
-
+	is_admin = IsAdminUser()
+	is_authenticated = IsAuthenticated()
 	authentication_classes = [TokenAuthentication]
 	
 	def get(self, request):
@@ -29,9 +30,9 @@ class ListStocks(APIView):
 	def get_permissions(self):
 		"""Override get_permissions so only admins can create new stocks"""
 		if self.request.method=='POST':
-			return [IsAdminUser()]
+			return [is_admin]
 		else:
-			return [IsAuthenticated()]
+			return [is_authenticated]
 
 class StockDetail(APIView):
 

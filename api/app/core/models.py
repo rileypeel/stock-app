@@ -35,15 +35,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
     USERNAME_FIELD = 'email'
 
+class DailyPrice(models.Model):
+    """Model for daily price data of a stock"""
+    stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
+    close_price = models.DecimalField(max_digits=10, decimal_places=2)
 
 class Stock(models.Model):
     """Model for stock data"""
     name = models.CharField(max_length=255)
     ticker = models.CharField(max_length=255)
-    last_price = models.DecimalField(
-        max_digits=10, decimal_places=3, null=True)
-    time_of_last_price = models.DateField(auto_now=True, null=True)
-
+  
     def __str__(self):
         return self.ticker
 
@@ -55,11 +56,26 @@ class Portfolio(models.Model):
         on_delete=models.CASCADE
     )
     name = models.CharField(max_length=255)
-    holdings = models.ManyToManyField('Stock')
+    stock_holdings = models.ManyToManyField('Stock')
     balance = models.DecimalField(max_digits=15, decimal_places=2, default=10000.00)
 
     def __str__(self):
         return self.name
+
+
+class Transaction(models.Model):
+    """Model for a recording a stock market transaction"""
+    portfolio = models.ForeignKey('Portfolio', on_delete=models.CASCADE)
+    stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
+    is_buy = models.BooleanField()
+    price_per_share = models.DecimalField(max_digits=10, decimal_places=3)
+    number_of_shares = models.IntegerField()
+
+    def __str__(self):
+        if self.is_buy:
+            return f"BUY {str(self.asset)} {str(self.number_of_shares)} @ {str(self.price_per_share)}"
+        else:
+            return f"SELL {str(self.asset)} {str(self.number_of_shares)} @ {str(self.price_per_share)}"
 
 
 class WatchList(models.Model):
@@ -74,23 +90,3 @@ class WatchList(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Transaction(models.Model):
-    """Model for a recording a stock market transaction"""
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
-    )
-
-    portfolio = models.ForeignKey('Portfolio', on_delete=models.CASCADE)
-    asset = models.ForeignKey('Stock', on_delete=models.CASCADE)
-    is_buy = models.BooleanField()
-    price_per_share = models.DecimalField(max_digits=10, decimal_places=3)
-    number_of_shares = models.IntegerField()
-
-    def __str__(self):
-        if self.is_buy:
-            return f"BUY {str(self.asset)} {str(self.number_of_shares)} @ {str(self.price_per_share)}"
-        else:
-            return f"SELL {str(self.asset)} {str(self.number_of_shares)} @ {str(self.price_per_share)}"

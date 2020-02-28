@@ -12,6 +12,9 @@ from portfolio.serializers import StockSerializer, PortfolioSerializer
 PORTFOLIO_URL = reverse('portfolio:portfolios')
 TRANSACTION_URL = reverse('portfolio:transaction')
 
+def detail_url(portfolio_id):
+	return reverse("portfolio:portfolio-detail", args=[portfolio_id])
+
 def sample_user(email='sandor@thehound.ca', password='chickens'):
 	return get_user_model().objects.create_user(email, password)
 
@@ -52,7 +55,6 @@ class PrivateApiTests(TestCase):
 		user2 = sample_user()
 		portfolio2 = sample_portfolio(user2, 'Sandors Portfolio')
 		portfolio2.holdings.add(sample_stock('Microsoft Inc.', 'MSFT'))
-
 		res = self.client.get(PORTFOLIO_URL)
 		portfolios = Portfolio.objects.filter(user=self.user)
 		serializer1 = PortfolioSerializer(portfolios, many=True)
@@ -74,30 +76,20 @@ class PrivateApiTests(TestCase):
 		for key in payload.keys():
 			self.assertEqual(getattr(portfolio, key), payload[key])
 
-	def test_update_portfolio(self):
-		pass
+	def test_change_portfolio_name(self):
+		"""Test changing the name of a portfolio"""
+		portfolio = sample_portfolio()
+		payload = {'name':'not rileys portfolio'}
+		res = self.client.put(detail_url(portfolio.id), payload)
+		portfolio.refresh_from_db()
+		self.assertEqual(portfolio.name, payload['name'])
 
-	def test_buying_stock(self):
-		"""Test user buying a stock"""
-		stock = sample_stock()
-		portfolio = sample_portfolio(self.user)
-		payload = {'is_buy':True, 'price_per_share':150.00, 'number_of_shares':2, 'ticker':'AAPL', 'portfolio':'rileys portfolio'}
-		res = self.client.post(TRANSACTION_URL, payload)
-
-		self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-		#TODO add more assertions to make sure portfolio is updated and trasaction object is saved correctly
-
-	def test_buying_stock_invalid(self):
-		"""Test buying stock with not enough money in portfolio"""
-		stock = sample_stock()
-		portfolio = sample_portfolio(self.user, balance=100.00)
-		payload = {'is_buy':True, 'price_per_share':150.00, 'number_of_shares':2, 'ticker':'AAPL', 'portfolio':'rileys portfolio'}
-		res = self.client.post(TRANSACTION_URL, payload)
-		print(res.data)
-		self.assertEqual(res.status_code, status.HTTP_409_CONFLICT)
-		
-		#TODO add more assertions to make sure no changes to portfolio and transaction is not saved
-
-	def test_selling_stock(self):
-		pass
+	def test_change_portfolio_balance_and_name(self):
+		"""Test changing the portfolio balance"""
+		portfolio = sample_portfolio()
+		payload = {'name':'notrileysportfolio','balance':500000}
+		res = self.client.put(detail_url(portfolio.id), payload)
+		portfolio.refresh_from_db()
+		self.assertEqual(portfolio.name, payload['name'])
+		self.assertEqual(portfolio.balance, payload['balance'])
 
