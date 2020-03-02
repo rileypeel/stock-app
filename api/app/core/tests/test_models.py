@@ -59,18 +59,6 @@ class ModelTests(TestCase):
 		)
 		self.assertEqual(str(portfolio), portfolio.name)
 
-	def test_watchlist_str(self):
-		"""Test string representation of watchlist model"""
-		user = get_user_model().objects.create_user(
-			'rileypeel04@hotmail.com',
-			'fakepassword'
-		)
-		watchlist = models.WatchList.objects.create(
-			name='Hot Penny Stocks',
-			user=user
-		)
-		self.assertEqual(str(watchlist), watchlist.name)
-
 	def test_transaction_str(self):
 		"""Test string representation of transaction model"""
 		user = get_user_model().objects.create_user(
@@ -83,10 +71,9 @@ class ModelTests(TestCase):
 			user=user
 		)
 		transaction = models.Transaction.objects.create(
-			user=user,
 			is_buy=True,
 			portfolio=portfolio,
-			asset=stock,
+			stock=stock,
 			price_per_share=100.00,
 			number_of_shares=100
 		)
@@ -95,3 +82,16 @@ class ModelTests(TestCase):
 			f"BUY {str(stock)} {transaction.number_of_shares} @ {transaction.price_per_share}"
 		)
 
+	def test_holding_str(self):
+		"""Test string representation of holding model"""
+		user = get_user_model().objects.create_user(
+			'rileypeel04@hotmail.com',
+			'fakepass'
+		)
+		stock = models.Stock.objects.create(ticker='MSFT', name='Microsoft')
+		portfolio = models.Portfolio.objects.create(
+			name='Rileys Portfolio',
+			user=user
+		)
+		holding = models.Holding.objects.create(number_of_shares=100, stock=stock, portfolio=portfolio)
+		self.assertEqual(f"100 shares of {stock}", str(holding))

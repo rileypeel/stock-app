@@ -9,8 +9,8 @@ from core.models import Stock, Portfolio, Transaction
 
 from portfolio.serializers import StockSerializer, PortfolioSerializer
 
-PORTFOLIO_URL = reverse('portfolio:portfolios')
-TRANSACTION_URL = reverse('portfolio:transaction')
+PORTFOLIO_URL = reverse('portfolio:portfolio-list')
+
 
 def detail_url(portfolio_id):
 	return reverse("portfolio:portfolio-detail", args=[portfolio_id])
@@ -51,10 +51,8 @@ class PrivateApiTests(TestCase):
 		"""Test getting portfolios for authenticated user only """
 		user1 = self.user
 		portfolio = sample_portfolio(user1)
-		portfolio.holdings.add(sample_stock())
 		user2 = sample_user()
 		portfolio2 = sample_portfolio(user2, 'Sandors Portfolio')
-		portfolio2.holdings.add(sample_stock('Microsoft Inc.', 'MSFT'))
 		res = self.client.get(PORTFOLIO_URL)
 		portfolios = Portfolio.objects.filter(user=self.user)
 		serializer1 = PortfolioSerializer(portfolios, many=True)
@@ -78,18 +76,32 @@ class PrivateApiTests(TestCase):
 
 	def test_change_portfolio_name(self):
 		"""Test changing the name of a portfolio"""
-		portfolio = sample_portfolio()
+		portfolio = sample_portfolio(self.user)
 		payload = {'name':'not rileys portfolio'}
-		res = self.client.put(detail_url(portfolio.id), payload)
+		res = self.client.patch(detail_url(portfolio.id), payload)
 		portfolio.refresh_from_db()
-		self.assertEqual(portfolio.name, payload['name'])
+		self.assertEqual(str(portfolio), payload['name'])
+
+	def test_change_portfolio_name_balance_unauthorized(self):
+		"""Test that a user cannont change another users portfolio"""
+		other_client = APIClient()
+		portfolio = sample_portfolio(self.user)
+		user2 = sample_user()
+
+		other_client.force_authenticate(user2)
+		payload = {'name':'sandors portfolio', 'balance':'20000'}
+		res = other_client.patch(detail_url(portfolio.id), payload)
+		self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+		self.assertEqual(str(portfolio), 'rileys portfolio')
+		self.assertEqual(int(portfolio.balance), 10000)
 
 	def test_change_portfolio_balance_and_name(self):
 		"""Test changing the portfolio balance"""
-		portfolio = sample_portfolio()
+		portfolio = sample_portfolio(self.user)
 		payload = {'name':'notrileysportfolio','balance':500000}
-		res = self.client.put(detail_url(portfolio.id), payload)
+		res = self.client.patch(detail_url(portfolio.id), payload)
 		portfolio.refresh_from_db()
-		self.assertEqual(portfolio.name, payload['name'])
+		self.assertEqual(str(portfolio), payload['name'])
 		self.assertEqual(portfolio.balance, payload['balance'])
+		
 

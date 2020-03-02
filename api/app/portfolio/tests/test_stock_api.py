@@ -1,26 +1,3 @@
-"""
-FUNCTIONALITY THAT I WANT TO TEST:
-
-UNAUTHENTICATED: NOTHING
-
-USER:
-
-VIEW/CREATE/UPDATE/DELETE: Portfolio, Watchlist your own portfolio
-
-
-VIEW ONLY: STOCKS (stock list and stock detail)
-CREATE AND VIEW ONLY: Transactions your own transactions
-
-TEST things you want to be able to do first and then test the things you dont want to be able to do
-
-ADMIN:
-
-
-FULL CONTROL
-
-
-
-"""
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse 
@@ -33,7 +10,7 @@ from core.models import Stock, Portfolio
 
 from portfolio.serializers import StockSerializer, PortfolioSerializer
 
-STOCK_URL = reverse('portfolio:stocks')
+STOCK_URL = reverse('portfolio:stock-list')
 
 def get_stock_detail_url(stock_id):
 	return reverse('portfolio:stock-detail', args=[stock_id])

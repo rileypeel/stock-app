@@ -12,7 +12,6 @@ class UserManager(BaseUserManager):
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-
         return user
 
     def create_superuser(self, email, password):
@@ -21,9 +20,7 @@ class UserManager(BaseUserManager):
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
-
         return user
-
 
 class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model that supports using email instead of username"""
@@ -48,7 +45,16 @@ class Stock(models.Model):
     def __str__(self):
         return self.ticker
 
+class Holding(models.Model):
+    """Model for a stock being held in a portfolio"""
+    number_of_shares = models.IntegerField()
+    stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
+    portfolio = models.ForeignKey('Portfolio', related_name='holdings',on_delete=models.CASCADE)
 
+    def __str__(self):
+        """String representaion of a holding"""
+        return f"{self.number_of_shares} shares of {self.stock}"
+    
 class Portfolio(models.Model):
     """Model for a users stock portfolio"""
     user = models.ForeignKey(
@@ -56,12 +62,11 @@ class Portfolio(models.Model):
         on_delete=models.CASCADE
     )
     name = models.CharField(max_length=255)
-    stock_holdings = models.ManyToManyField('Stock')
     balance = models.DecimalField(max_digits=15, decimal_places=2, default=10000.00)
 
     def __str__(self):
+        """String representation of a Portfolio"""
         return self.name
-
 
 class Transaction(models.Model):
     """Model for a recording a stock market transaction"""
@@ -72,21 +77,9 @@ class Transaction(models.Model):
     number_of_shares = models.IntegerField()
 
     def __str__(self):
+        """String representation of a Transaction"""
         if self.is_buy:
-            return f"BUY {str(self.asset)} {str(self.number_of_shares)} @ {str(self.price_per_share)}"
+            return f"BUY {self.stock} {self.number_of_shares} @ {self.price_per_share}"
         else:
-            return f"SELL {str(self.asset)} {str(self.number_of_shares)} @ {str(self.price_per_share)}"
+            return f"SELL {self.stock} {self.number_of_shares} @ {self.price_per_share}"
 
-
-class WatchList(models.Model):
-    """Model for a users stock watchlist"""
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
-    )
-
-    name = models.CharField(max_length=255)
-    stocks = models.ManyToManyField('Stock')
-
-    def __str__(self):
-        return self.name
