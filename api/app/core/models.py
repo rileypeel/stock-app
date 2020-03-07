@@ -35,12 +35,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 class DailyPrice(models.Model):
     """Model for daily price data of a stock"""
     stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
+    time_stamp = models.DateTimeField()
+    open_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     close_price = models.DecimalField(max_digits=10, decimal_places=2)
+    high_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    low_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    volume = models.IntegerField()
 
 class Stock(models.Model):
     """Model for stock data"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=True, null=True)
     ticker = models.CharField(max_length=255)
+    latest_price_date = models.DateField(blank=True, null=True)
   
     def __str__(self):
         return self.ticker
