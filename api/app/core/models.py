@@ -32,6 +32,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
     USERNAME_FIELD = 'email'
 
+class MinutePrice(models.Model):
+    """Model for minute price data of a stock"""
+    stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
+    time_stamp = models.DateTimeField()
+    open_price = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
+    close_price = models.DecimalField(max_digits=10, decimal_places=4)
+    high_price = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
+    low_price = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
+    volume = models.IntegerField()
+
+    class Meta:
+        unique_together = ('stock', 'time_stamp')
+
 class DailyPrice(models.Model):
     """Model for daily price data of a stock"""
     stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
@@ -41,11 +54,14 @@ class DailyPrice(models.Model):
     high_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     low_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     volume = models.IntegerField()
+    #market_closed = models.BooleanField()
+    class Meta:
+        unique_together = ('stock', 'time_stamp')
 
 class Stock(models.Model):
     """Model for stock data"""
     name = models.CharField(max_length=255, blank=True, null=True)
-    ticker = models.CharField(max_length=255)
+    ticker = models.CharField(max_length=255, unique=True)
     latest_price_date = models.DateField(blank=True, null=True)
   
     def __str__(self):

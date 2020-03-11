@@ -25,7 +25,7 @@ SECRET_KEY = 'fvtb)3y$4az*%dja9qm+wdxh^wpo^mi!2@-vtpl$+dt^1*#7u&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0']
 
 
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'core',
     'user',
     'portfolio',
+    'stockdata',
 ]
 
 MIDDLEWARE = [
