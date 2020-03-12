@@ -25,7 +25,11 @@ SECRET_KEY = 'fvtb)3y$4az*%dja9qm+wdxh^wpo^mi!2@-vtpl$+dt^1*#7u&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = ['0.0.0.0']
+=======
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
+>>>>>>> riley-fe
 
 
 # Application definition
