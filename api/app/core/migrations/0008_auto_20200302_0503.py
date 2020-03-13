@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='holding',
             name='portfolio',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='holdings', to='core.Portfolio'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, related_name='holdings', to='core.Portfolio'),
         ),
     ]

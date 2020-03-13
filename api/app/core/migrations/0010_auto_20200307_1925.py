@@ -13,17 +13,20 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='dailyprice',
             name='high_price',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True),
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=10, null=True),
         ),
         migrations.AlterField(
             model_name='dailyprice',
             name='low_price',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True),
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=10, null=True),
         ),
         migrations.AlterField(
             model_name='dailyprice',
             name='open_price',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True),
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=10, null=True),
         ),
         migrations.AlterField(
             model_name='dailyprice',

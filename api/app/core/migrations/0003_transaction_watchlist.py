@@ -15,22 +15,29 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WatchList',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),
                 ('stocks', models.ManyToManyField(to='core.Stock')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
             name='Transaction',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('is_buy', models.BooleanField()),
-                ('price_per_share', models.DecimalField(decimal_places=3, max_digits=10)),
+                ('price_per_share', models.DecimalField(
+                    decimal_places=3, max_digits=10)),
                 ('number_of_shares', models.IntegerField()),
-                ('portfolio', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.Portfolio')),
-                ('stock', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.Stock')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('portfolio', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='core.Portfolio')),
+                ('stock', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='core.Stock')),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

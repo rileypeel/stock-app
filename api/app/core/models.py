@@ -22,6 +22,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model that supports using email instead of username"""
     email = models.EmailField(max_length=255, unique=True)
@@ -32,51 +33,64 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
     USERNAME_FIELD = 'email'
 
+
 class MinutePrice(models.Model):
     """Model for minute price data of a stock"""
     stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
     time_stamp = models.DateTimeField()
-    open_price = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
+    open_price = models.DecimalField(
+        max_digits=10, decimal_places=4, blank=True, null=True)
     close_price = models.DecimalField(max_digits=10, decimal_places=4)
-    high_price = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
-    low_price = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
+    high_price = models.DecimalField(
+        max_digits=10, decimal_places=4, blank=True, null=True)
+    low_price = models.DecimalField(
+        max_digits=10, decimal_places=4, blank=True, null=True)
     volume = models.IntegerField()
 
     class Meta:
         unique_together = ('stock', 'time_stamp')
+
 
 class DailyPrice(models.Model):
     """Model for daily price data of a stock"""
     stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
     time_stamp = models.DateTimeField()
-    open_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    open_price = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
     close_price = models.DecimalField(max_digits=10, decimal_places=2)
-    high_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    low_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    high_price = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    low_price = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
     volume = models.IntegerField()
     #market_closed = models.BooleanField()
+
     class Meta:
         unique_together = ('stock', 'time_stamp')
+
 
 class Stock(models.Model):
     """Model for stock data"""
     name = models.CharField(max_length=255, blank=True, null=True)
     ticker = models.CharField(max_length=255, unique=True)
     latest_price_date = models.DateField(blank=True, null=True)
-  
+
     def __str__(self):
         return self.ticker
+
 
 class Holding(models.Model):
     """Model for a stock being held in a portfolio"""
     number_of_shares = models.IntegerField()
     stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
-    portfolio = models.ForeignKey('Portfolio', related_name='holdings',on_delete=models.CASCADE)
+    portfolio = models.ForeignKey(
+        'Portfolio', related_name='holdings', on_delete=models.CASCADE)
 
     def __str__(self):
         """String representaion of a holding"""
         return f"{self.number_of_shares} shares of {self.stock}"
-    
+
+
 class Portfolio(models.Model):
     """Model for a users stock portfolio"""
     user = models.ForeignKey(
@@ -84,11 +98,13 @@ class Portfolio(models.Model):
         on_delete=models.CASCADE
     )
     name = models.CharField(max_length=255)
-    balance = models.DecimalField(max_digits=15, decimal_places=2, default=10000.00)
+    balance = models.DecimalField(
+        max_digits=15, decimal_places=2, default=10000.00)
 
     def __str__(self):
         """String representation of a Portfolio"""
         return self.name
+
 
 class Transaction(models.Model):
     """Model for a recording a stock market transaction"""
@@ -104,4 +120,3 @@ class Transaction(models.Model):
             return f"BUY {self.stock} {self.number_of_shares} @ {self.price_per_share}"
         else:
             return f"SELL {self.stock} {self.number_of_shares} @ {self.price_per_share}"
-

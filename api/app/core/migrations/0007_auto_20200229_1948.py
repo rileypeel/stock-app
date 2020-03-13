@@ -14,7 +14,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Holding',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('number_of_shares', models.IntegerField()),
             ],
         ),
@@ -33,11 +34,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='holding',
             name='portfolio',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.Portfolio'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='core.Portfolio'),
         ),
         migrations.AddField(
             model_name='holding',
             name='stock',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.Stock'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='core.Stock'),
         ),
     ]

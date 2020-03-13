@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='stock',
             name='last_price',
-            field=models.DecimalField(decimal_places=3, max_digits=10, null=True),
+            field=models.DecimalField(
+                decimal_places=3, max_digits=10, null=True),
         ),
         migrations.AddField(
             model_name='stock',
@@ -25,10 +26,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Portfolio',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),
                 ('holdings', models.ManyToManyField(to='core.Stock')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]
