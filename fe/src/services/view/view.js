@@ -50,8 +50,7 @@ function View(init = false) {
     setPastData(data) {
       // draw previous data
       this.canvas.selectAll('.past').remove()
-      this.canvas//.selectAll('rect')
-        .data(data)
+      this.canvas.data(data)
         .enter()
         .each((d, i) => {
           var offset = data.length - i
