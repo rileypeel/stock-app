@@ -8,12 +8,18 @@
       </select>
     </div>
     <div class="option">
+      <label class="option-label">Count</label>
+      <input class="option-count" v-model.number="count"
+          type="number" @change="setCount"/>
+    </div>
+    <div class="option">
       <label class="option-label">Line</label>
-      <input type="checkbox" v-model="showLine" @change="setLine"/>
+      <input class="option-show-line" type="checkbox"
+          v-model="showLine" @change="setLine"/>
     </div>
     <div class="option">
       <label class="option-label">Chart</label>
-      <select class="option-period"
+      <select class="option-chart"
           v-model="chart" @change="setChart">
         <option v-for="c in charts" :key="c" :value="c">{{c}}</option>
       </select>
@@ -38,13 +44,19 @@ export default {
       periods: PERIODS,
       charts: CHARTS,
       period: cfg.period,
+      count: cfg.count,
       showLine: cfg.showLine,
       chart: cfg.chart,
     }
   },
   methods: {
+    // TODO(kieran) Change these so they don't call view update directly
     setPeriod() {
       this.cfg.period = this.period
+      this.view.update()
+    },
+    setCount() {
+      this.cfg.count = this.count
       this.view.update()
     },
     setLine() {
@@ -75,7 +87,7 @@ export default {
   margin-right: 5px;
 }
 
-.option-period {
-
+.option-count {
+  width: 40px;
 }
 </style>

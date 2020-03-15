@@ -7,6 +7,7 @@ var obj
 function Cfg() {
   obj = obj || {
     period: cfg.PERIOD_DAILY,
+    count: 40,
     chart: cfg.CHART_BAR,
     ticker: null,
     showLine: true,
