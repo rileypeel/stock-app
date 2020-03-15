@@ -3,8 +3,9 @@ import * as d3 from 'd3'
 import * as cfg from '../../constants/view'
 
 import frame from './widgets/frame'
-import line from './widgets/line'
+import level from './widgets/level'
 import bar from './widgets/bar'
+import line from './widgets/line'
 
 import Cfg from '../cfg'
 
@@ -34,22 +35,33 @@ function View(init = false) {
       // remove old data and draw the current data
       this.canvas.selectAll('.current').remove()
       if (this.cfg.showLine) {
-        line(data, this.canvas)
+        level(data, this.canvas)
       }
       if (this.cfg.chart === cfg.CHART_BAR) {
         bar(data, this.canvas)
       }
+      if (this.cfg.chart === cfg.CHART_LINE) {
+        var pastData = this.ticker.getPastData()
+        if (pastData.length) {
+          line(data, pastData[pastData.length - 1], this.canvas)
+        }
+      }
     },
     setPastData(data) {
       // draw previous data
-      this.canvas.selectAll('rect').remove()
-      this.canvas.selectAll('rect')
+      this.canvas.selectAll('.past').remove()
+      this.canvas//.selectAll('rect')
         .data(data)
         .enter()
         .each((d, i) => {
           var offset = data.length - i
           if (this.cfg.chart === cfg.CHART_BAR) {
             bar(d, this.canvas, offset)
+          }
+          if (this.cfg.chart === cfg.CHART_LINE) {
+            if (i + 1 != data.length) {
+              line(d, data[i + 1], this.canvas, offset - 1)
+            } 
           }
         })
     },

@@ -21,9 +21,11 @@ function FakeTicker() {
       data: {
         past: [],
         current: {
-          hi: null,
-          lo: null,
-          y: null,
+          hi: 50,
+          lo: 50,
+          y: 50,
+          all: [50],
+          avg: 50,
         }
       }
     },
@@ -49,15 +51,15 @@ function FakeTicker() {
       // set the ticker on the view
       subscriber && subscriber.setStock(this.cfg.exchange, this.cfg.ticker)
     },
-    runTicker(index = 0) {
+    runTicker(index = -1) {
       // loop for running the ticker
       // replace this with getStock call to an API
       var nextIndex = ++index % this.cfg.refreshRate
       this.simulateStock()
-      this.updateEntry()
       if (!nextIndex) {
         this.newEntry()
       }
+      this.updateEntry()
       setTimeout(() => this.runTicker(nextIndex), 1000 / this.cfg.refreshRate)
     },
     newEntry() {
@@ -73,7 +75,14 @@ function FakeTicker() {
 
       subscriber && subscriber.setPastData(past)
 
-      this.cfg.data.current = { hi: current.y, lo: current.y, y: current.y}
+      this.cfg.data.current = {
+        hi: current.y,
+        lo: current.y,
+        y: current.y,
+        avg: current.y,
+        all: [current.y]
+      }
+
       this.cfg.data.past = past
     },
     updateEntry() {
@@ -83,20 +92,22 @@ function FakeTicker() {
     simulateStock() {
       // simulate a stock object, with a current value (y), high, and low
       var data = this.cfg.data.current
-      if (!data.y) {
-        data.y = 50
-        data.hi = 50
-        data.lo = 50
-      } else {
-        var oldY = data.y
-        var newY = (oldY - 5) + (Math.random() * 10)
-        newY = newY > this.cfg.max
-          ? this.cfg.max : newY < this.cfg.min
-          ? this.cfg.min : newY
-        data.hi = data.hi < newY ? newY : data.hi
-        data.lo = data.lo > newY ? newY : data.lo
-        data.y = newY
-      }
+      var oldY = data.y
+      // randomize off of oldY
+      var newY = (oldY - 5) + (Math.random() * 10)
+      // make sure it doesn't go out of bounds
+      newY = newY > this.cfg.max
+        ? this.cfg.max : newY < this.cfg.min
+        ? this.cfg.min : newY
+      // add newY to all dataset
+      data.all.push(newY)
+      // get new max/min
+      data.hi = Math.max(...data.all)
+      data.lo = Math.min(...data.all)
+      // get the average
+      data.avg = data.all.reduce((a, b) => a + b, 0) / data.all.length
+      // set Y
+      data.y = newY
     },
     start() {
       // start the stonks service

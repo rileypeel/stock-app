@@ -1,31 +1,19 @@
-// functions for drawing the current level of a stock as a horizontal line 
-
-// draw the current level as a red line
-function drawLine(data, canvas) {
+// functions for drawing line graphs
+function drawLine(curr, prev, canvas, offset) {
+  var isPast = offset !== null
+  var x = 36 + (isPast ? ((40 - offset) * 12) : 480)
   canvas.append('line')
-    .attr('class', 'current')
-    .style('stroke', 'red')
-    .style('stroke-width', 0.5)
-    .attr('x1', 0)
-    .attr('y1', data ? (data.y * 3) + 50 : 175)
-    .attr('x2', 600)
-    .attr('y2', data ? (data.y * 3) + 50 : 175)
+    .attr('class', isPast ? 'past' : 'current')
+    .style('stroke', 'green')
+    .style('stroke-width', 3)
+    .attr('x1', x + (isPast ? 0 : 12))
+    .attr('y1', ((isPast ? curr.avg : curr.y) * 3) + 50)
+    .attr('x2', x + (isPast? 12 : 0))
+    .attr('y2', (prev.avg * 3) + 50)
 }
 
-// render the current level numerically 
-function drawLabel(data, canvas) {
-  canvas.append('text')
-    .attr('class', 'current')
-    .attr('x', 556)
-    .attr('y', data ? (data.y * 3) + 46 : 175)
-    .attr('fill', 'red')
-    .text(`${(100 - data.y).toFixed(2)}$`)
-}
-
-// render the current level
-function draw(data, canvas) {
-  drawLine(data, canvas)
-  drawLabel(data, canvas)
+function draw(curr, prev, canvas, offset = null) {
+  drawLine(curr, prev, canvas, offset)
 }
 
 export default draw
