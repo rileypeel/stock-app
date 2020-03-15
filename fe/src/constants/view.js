@@ -29,3 +29,19 @@ export const CHARTS = [
   CHART_CANDLE,
   CHART_LINE
 ]
+
+// tickers that can be selected
+export const TICKER_RMP = 'RMP'
+export const TICKER_KMC = 'KMC'
+export const TICKER_BS = 'BS'
+export const TICKER_BJW = 'BJW'
+export const TICKER_LP = 'LP'
+
+// enabled tickers
+export const TICKERS = [
+  TICKER_BJW,
+  TICKER_BS,
+  TICKER_KMC,
+  TICKER_LP,
+  TICKER_RMP
+]
