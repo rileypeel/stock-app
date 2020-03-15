@@ -1,11 +1,12 @@
 // functions for drawing bars on a chart representing stock hi/lo's 
 function drawBar(data, canvas, offset) {
+  var isPast = offset !== null
   canvas.append('rect')
-    .attr('class', '.past')
+    .attr('class', isPast ? '.past' : '.current')
     .attr('fill', 'green')
     .attr('width', 11)
     .attr('height', ((data.hi - data.lo) * 3))
-    .attr('x', 36 + (offset !== null ? ((40 - offset) * 12) : 480))
+    .attr('x', 36 + (isPast ? ((40 - offset) * 12) : 480))
     .attr('y', (data.lo * 3) + 50)
 }
 
