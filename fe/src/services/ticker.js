@@ -8,6 +8,7 @@
 const tickerService = {
   async getTickers() {
     // return a list of valid ticker names
+    
     return []
   },
   async getTicker(name) {

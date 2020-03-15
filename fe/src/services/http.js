@@ -22,7 +22,7 @@ var json = (obj) => obj ? JSON.stringify(obj) : ''
 var obj = (json) => json ? JSON.parse(json) : {}
 
 // create the fetch() body
-var body = (method, data) => ({ method, body: json(data) })
+var body = (method, data) => ({method, headers: {'Content-Type':'application/json',}, body:json(data)})
 
 // service object
 const httpService = {
@@ -31,6 +31,7 @@ const httpService = {
     var data = await fetch(addr(path), body(httpGet))
     return obj(data)
   },
+
   // POST request
   post: async (path, data) => fetch(addr(path), body(httpPost, data)),
   // DELETE request
