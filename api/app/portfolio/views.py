@@ -43,10 +43,10 @@ class StockDetail(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, id):
+    def get(self, request, ticker):
         """Return a detail view of a stock"""
         try:
-            stock = Stock.objects.get(id=id)
+            stock = Stock.objects.get(ticker=ticker)
         except Stock.NotFoundError:
             return Response(status=status.HTTP_404_NOT_FOUND)
 

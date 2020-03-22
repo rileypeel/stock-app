@@ -19,17 +19,31 @@ var addr = (path) => `${api}${path}`
 var json = (obj) => obj ? JSON.stringify(obj) : ''
 
 // turn JSON into a JS object
-var obj = (json) => json ? JSON.parse(json) : {}
+//var obj = (json) => json ? JSON.parse(json) : {}
 
+//create request header object with auth token
+var header = () => {
+  var header = new Headers({'Content-Type':'application/json'});
+  var token = localStorage.getItem('token');
+  if(token != null) {
+    header.append('Authorization', ''.concat('Token ', token));
+    
+  }
+  return header;
+}
 // create the fetch() body
-var body = (method, data) => ({method, headers: {'Content-Type':'application/json',}, body:json(data)})
+var body = (method, data) => ({method, headers:header(), body:json(data)})
 
+var getbody = (method) => ({method, headers:header()})
 // service object
 const httpService = {
   // GET request
   async get (path) { 
-    var data = await fetch(addr(path), body(httpGet))
-    return obj(data)
+    var response = await fetch(addr(path), getbody(httpGet));
+    if(response.status == 200) { 
+      var data = await response.json();
+      return data;
+    }
   },
 
   // POST request

@@ -6,12 +6,12 @@ app_name = 'portfolio'
 
 urlpatterns = [
     path('stocks', views.ListStocks.as_view(), name='stock-list'),
-    path('stocks/<int:id>', views.StockDetail.as_view(), name='stock-detail'),
-    path('portfolio', views.PortfolioView.as_view(), name='portfolio-list'),
-    path('portfolio/<int:id>', views.PortfolioDetailView.as_view(),
+    path('stocks/<str:ticker>', views.StockDetail.as_view(), name='stock-detail'),
+    path('', views.PortfolioView.as_view(), name='portfolio-list'),
+    path('/<int:id>', views.PortfolioDetailView.as_view(),
          name='portfolio-detail'),
-    path('portfolio/transaction/<int:id>',
+    path('/transaction/<int:id>',
          views.TransactionDetailView.as_view(), name='transaction-detail'),
-    path('portfolio/<int:id>/transaction',
+    path('/<int:id>/transaction',
          views.TransactionView.as_view(), name='transaction-list')
 ]
