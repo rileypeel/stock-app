@@ -12,15 +12,31 @@
         <el-menu-item index="2-4-2">item two</el-menu-item>
         <el-menu-item index="2-4-3">item three</el-menu-item>
       </el-submenu>
+      
     </el-submenu>
+    <el-menu-item @click="logout" index="3">Logout</el-menu-item>
   </el-menu>
 </template>
 
 
 <script>
+import userService from '../services/user.js'
 export default {
-  name: "Navigation" 
+  name: "Navigation",
+
+  methods: {
+    handleSelect() {
+      console.log("select")
+    },
+    logout() {
+      userService.logout()
+      this.$router.push('Login');
+    }
+  }
 }
+
+
+
 
 </script>
 

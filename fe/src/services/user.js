@@ -25,6 +25,10 @@ const userService = {
     }
   },
 
+  async logout() {
+    localStorage.removeItem('token');
+  }
+ 
 }
 
 export default userService 

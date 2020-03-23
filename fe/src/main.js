@@ -15,20 +15,24 @@ Vue.use(ElementUI)
 
 const router = new Router({
   routes: [
-    { path: '/', component: Home },
+    { path: '/', component: Home, meta: { requiresAuth: true } },
     { path: '/login', name: 'Login', component: Login },
     { path: '/register', component: Register },  
-    { path: '/stock', name: 'Stock', component: Transaction },
-    { path: '/user', name: 'User', component: User}
+    { path: '/stock', name: 'Stock', component: Transaction, meta: { requiresAuth: true } },
+    { path: '/user', name: 'User', component: User, meta: { requiresAuth: true }}
   ]
 });
 
-//const isAuthenticated = () => (localStorage.getItem('token') == null) ? false : true
+const isAuthenticated = () => (localStorage.getItem('token') == null) ? false : true
   
-//router.beforeEach((to, from, next) => {
-//  if(to.name == 'Login' && !isAuthenticated()) next({ name: 'Login' });
-//  else next();  
-//});
+router.beforeEach((to, from, next) => {
+  if(from.name == 'Login' && !isAuthenticated()) next({ name: 'Login' });
+  else if(to.meta.requiresAuth) {
+    if(!isAuthenticated()) next({ name: 'Login' });
+    else next();
+  } 
+  else next();  
+});
 
 new Vue({
   render: h => h(App),
