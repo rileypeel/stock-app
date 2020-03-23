@@ -2,7 +2,7 @@
 function drawBar(data, canvas, offset) {
   var isPast = offset !== null
   canvas.append('rect')
-    .attr('class', isPast ? '.past' : '.current')
+    .attr('class', isPast ? 'past' : 'current')
     .attr('fill', 'green')
     .attr('width', 11)
     .attr('height', ((data.hi - data.lo) * 3))
