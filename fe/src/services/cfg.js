@@ -9,7 +9,8 @@ function Cfg() {
     period: cfg.PERIOD_DAILY,
     count: 40,
     chart: cfg.CHART_BAR,
-    ticker: null,
+    exchange: 'NASDAQ',
+    ticker: 'RMP',
     showLine: true,
   }
 

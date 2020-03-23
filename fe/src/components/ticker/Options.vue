@@ -24,11 +24,18 @@
         <option v-for="c in charts" :key="c" :value="c">{{c}}</option>
       </select>
     </div>
+    <div class="option">
+      <label class="option-label">Ticker</label>
+      <select class="option-ticker"
+          v-model="ticker" @change="setTicker">
+        <option v-for="t in tickers" :key="t" :value="t">{{t}}</option>
+      </select>
+    </div>
   </div>
 </template>
 
 <script>
-import { PERIODS, CHARTS } from '../../constants/view'
+import { PERIODS, CHARTS, TICKERS } from '../../constants/view'
 
 import Cfg from '../../services/cfg'
 import View from '../../services/view/view'
@@ -43,8 +50,10 @@ export default {
       cfg,
       periods: PERIODS,
       charts: CHARTS,
+      tickers: TICKERS,
       period: cfg.period,
       count: cfg.count,
+      ticker: cfg.ticker,
       showLine: cfg.showLine,
       chart: cfg.chart,
     }
@@ -65,6 +74,10 @@ export default {
     },
     setChart() {
       this.cfg.chart = this.chart
+      this.view.update()
+    },
+    setTicker() {
+      this.cfg.ticker = this.ticker
       this.view.update()
     }
   }

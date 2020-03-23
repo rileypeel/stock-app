@@ -16,8 +16,6 @@ function FakeTicker() {
       periodCount: 50,
       offset: 10,
       date: null,
-      exchange: 'NASDAQ',
-      ticker: 'RMP',
       data: {
         past: [],
         current: {
@@ -31,6 +29,7 @@ function FakeTicker() {
     },
     getDate() {
       // returns date in "Thu Mar 05 2020 20:28:11" format
+      // TODO(kieran) move this into a date service
       return Date().toLocaleString().split(' ').slice(0, 5).join(' ').toLowerCase()
     },
     getCurrentData() {
@@ -119,7 +118,6 @@ function FakeTicker() {
       //
       // must have { setCurrentData(data), setPastData(data) } methods
       subscriber = view
-      this.setStock()
       this.refreshDate()
     }
   }

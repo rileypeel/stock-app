@@ -25,11 +25,10 @@ function View(init = false) {
       // sets the date object in the header
       d3.select('.date').text(date)
     },
-    setStock(exchange, ticker) {
+    setStock() {
       // sets the view ticker
-      this.cfg.ticker = ticker
-      d3.select('.exchange').text(exchange)
-      d3.select('.ticker').text(ticker)
+      d3.select('.exchange').text(this.cfg.exchange)
+      d3.select('.ticker').text(this.cfg.ticker)
     },
     setCurrentData(data) {
       // remove old data and draw the current data
@@ -66,13 +65,16 @@ function View(init = false) {
     },
     update() {
       // update the graph to match settings
+      // TODO(kieran) pass in parameters to specifically update
       this.setPastData(this.ticker.getPastData())
       this.setCurrentData(this.ticker.getCurrentData())
+      this.setStock()
     },
     init() {
       // initialize the view and draw the frame
       this.canvas = d3.select('#canvas')
       frame(this.canvas)
+      this.setStock()
     }
   }
 
