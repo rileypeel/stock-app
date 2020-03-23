@@ -15,13 +15,20 @@ const portfolioService = {
     var portfolio = await httpService.get('api/portfolio/'.concat(id));
     return portfolio;
   },
-  async newPortfolio(name, balance) {
+  async newPortfolio(payload) {
     // make a new portfolio
-    var payload = {
-      name: name,
-      balance: balance
-    }
-    httpService.post('api/portfolio/', payload)
+   var response = await httpService.post('api/portfolio/', payload);
+   console.log(response.status)
+   if(response.status == 201) {
+     return true;
+   } else {
+     return false;
+   }
+  },
+  async delPortfolio(id) {
+    //delete a portfolio 
+    //TODO
+    console.log(id)
   },
   async getTransactions(portfolioId) {
     // return a list of transactions for a specific portfolio

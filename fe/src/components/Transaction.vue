@@ -4,11 +4,10 @@
       <el-form-item prop="ticker" label="Stock Symbol">
         <el-input  v-model="transaction.ticker"></el-input>
       </el-form-item>
-      <el-button @click="">Get Quote</el-button>
+      <el-button @click="getQuote()">Get Quote</el-button>
       <el-form-item prop="numberOfShares" label="# of shares">
         <el-input  v-model="trans.numberOfShares"></el-input>
-      </el-form-item>
-       
+      </el-form-item>  
     </el-form>
   </div>  
 </template>
@@ -30,7 +29,9 @@ export default {
   },
 
   methods: {
-   
+    getQuote() {
+
+    }
   }
 }
 </script>

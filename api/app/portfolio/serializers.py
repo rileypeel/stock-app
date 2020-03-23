@@ -35,11 +35,11 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 class PortfolioSerializer(serializers.ModelSerializer):
     """Serializer for Portfolio objects"""
-    holdings = serializers.StringRelatedField(many=True)
+    
 
     class Meta:
         model = Portfolio
-        fields = ('id', 'name', 'balance', 'holdings')
+        fields = ('id', 'name', 'balance')
         read_only_fields = ('id',)
 
 

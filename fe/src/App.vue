@@ -35,4 +35,10 @@ textarea {
   margin: 0;
   padding: 0;
 }
+
+.button{
+  border-radius:30px;
+  background-color:rgba(37,33,83,.6);
+  border-color:rgba(37,33,83,.6);
+}
 </style>

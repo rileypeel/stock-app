@@ -16,6 +16,7 @@ const userService = {
     }
     return false;
   },
+  
   async newUser(userDetails) {
     var response = await httpService.post('api/user/create/', userDetails)
     if(response.status == 201){

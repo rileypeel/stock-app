@@ -35,7 +35,6 @@ export default {
   },
   methods: {
     submitForm() {
-
       this.$refs['loginForm'].validate((valid) => {
         if(valid) {
           userService.login(this.userCredentials).then((success) => {
@@ -75,10 +74,4 @@ export default {
 .login {
   font-weight:bold;
 }
-.button{
-	border-radius:30px;
-	background-color:rgba(37,33,83,.6);
-	border-color:rgba(37,33,83,.6);
-}
-
 </style>
