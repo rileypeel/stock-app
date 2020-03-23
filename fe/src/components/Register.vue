@@ -45,14 +45,16 @@ export default {
               this.$notify({
                 title: 'Success',
                 message: 'You have successfully created an account.',
-                type: 'success'
+                type: 'success',
+                duration: 2000
               });
               this.$router.push("Login");
             } else {
               this.$notify({
                 title: 'Error',
                 message: 'Account was not created, Email address may already be taken.',
-                type: 'error'
+                type: 'error',
+                duration: 2000
               });
             }
           });
@@ -60,7 +62,8 @@ export default {
           this.$notify({
             title: 'Error',
             message: 'Please enter valid input.',
-            type: 'error'
+            type: 'error',
+            duration: 2000
           });
         }
       });

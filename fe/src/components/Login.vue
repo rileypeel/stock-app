@@ -43,14 +43,16 @@ export default {
               this.$notify({
                 title: 'Success',
                 message: '',
-                type: 'success'
+                type: 'success',
+                duration: 2000
               });
               this.$router.push("User");
             } else {
               this.$notify({
                 title: 'Error',
                 message: 'Login failed, please try again.',
-                type: 'error'
+                type: 'error',
+                duration: 2000
               });
             }
           });         
@@ -58,7 +60,8 @@ export default {
           this.$notify({
             title: 'Error',
             message: 'Please enter valid username and password.',
-            type: 'error'
+            type: 'error',
+            duration: 2000
           });
         }
       });

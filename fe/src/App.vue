@@ -22,6 +22,15 @@ export default {
   margin-top: 60px;
 }
 
+button, 
+input, 
+select, 
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
 * {
   margin: 0;
   padding: 0;
