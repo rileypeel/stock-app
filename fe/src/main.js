@@ -11,6 +11,7 @@ import Transaction from './components/Transaction.vue';
 import User from './components/User.vue';
 import Portfolio from './components/Portfolio.vue';
 import PortfolioDetail from './components/PortfolioDetail.vue';
+import Stock from './components/Stock.vue';
 
 
 Vue.config.productionTip = false
@@ -25,7 +26,8 @@ const router = new Router({
     { path: '/stock', name: 'Stock', component: Transaction, meta: { requiresAuth: true } },
     { path: '/user', name: 'User', component: User, meta: { requiresAuth: true } },
     { path: '/portfolio', name: 'Portfolio', component: Portfolio, meta: { requiresAuth: true } },
-    { path: '/portfolio/:id', name: 'PortfolioDetail', component: PortfolioDetail, meta: { requiresAuth: true } }
+    { path: '/portfolio/:id', name: 'PortfolioDetail', component: PortfolioDetail, meta: { requiresAuth: true } },
+    { path: '/stocks', name: 'Stock', component: Stock, meta: { requiresAuth: true } }
      
   ]
 });

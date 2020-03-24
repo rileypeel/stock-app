@@ -1,14 +1,14 @@
 <template>
-  <div class="portfolioDetail">
+  <div class="stock">
    <Navigation/>
-    <p>{{ $route.params.id }}</p>
+    <p>Stocks</p>
   </div>  
 </template>
 
 <script>
 import Navigation from './Navigation.vue';
 export default {
-  name: "PortfolioDetail",
+  name: "Stock",
   components : {
     Navigation
   },
@@ -17,7 +17,7 @@ export default {
 </script>
 
 <style>
-.user {
+.stock {
   font-weight: bold;
 }
 </style>

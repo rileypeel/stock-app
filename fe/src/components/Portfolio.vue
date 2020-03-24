@@ -1,5 +1,5 @@
 <template>
-  <div id="Portfolio">
+  <div class="portfolio">
     <Navigation/>
     <div v-if="loading" class="loading">
     Loading...
@@ -118,6 +118,9 @@ export default {
 
 
 <style>
+.portfolio{
+  font-weight: bold;
+}
 .dialog{
   background-color: rgba(255,255,255,.3);
   border-radius: 20px;
