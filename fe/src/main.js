@@ -10,6 +10,8 @@ import Register from './components/Register.vue';
 import Transaction from './components/Transaction.vue';
 import User from './components/User.vue';
 import Portfolio from './components/Portfolio.vue';
+import PortfolioDetail from './components/PortfolioDetail.vue';
+
 
 Vue.config.productionTip = false
 Vue.use(Router)
@@ -21,8 +23,10 @@ const router = new Router({
     { path: '/login', name: 'Login', component: Login },
     { path: '/register', component: Register },  
     { path: '/stock', name: 'Stock', component: Transaction, meta: { requiresAuth: true } },
-    { path: '/user', name: 'User', component: User, meta: { requiresAuth: true }},
-    { path: '/portfolio', name: 'Portfolio', component: Portfolio, meta: { requiresAuth: true }}
+    { path: '/user', name: 'User', component: User, meta: { requiresAuth: true } },
+    { path: '/portfolio', name: 'Portfolio', component: Portfolio, meta: { requiresAuth: true } },
+    { path: '/portfolio/:id', name: 'PortfolioDetail', component: PortfolioDetail, meta: { requiresAuth: true } }
+     
   ]
 });
 

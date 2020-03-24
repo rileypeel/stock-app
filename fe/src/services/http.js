@@ -55,7 +55,9 @@ const httpService = {
       return data;
     }
   },
-
+  async newget(path) {
+    return fetch(addr(path), getBody(httpGet));
+  },
   // POST request
   post: async (path, data) => fetch(addr(path), body(httpPost, data)),
   // DELETE request
