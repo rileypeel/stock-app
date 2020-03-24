@@ -15,6 +15,12 @@ const portfolioService = {
     var portfolio = await httpService.get('api/portfolio/'.concat(id));
     return portfolio;
   },
+  async getHoldings(id) {
+    //return holdings for a portfolio
+    var holdings = await httpService.get('urlhere'.concat(id))
+    return holdings
+  },
+
   async newPortfolio(payload) {
     // make a new portfolio
    var response = await httpService.post('api/portfolio/', payload);

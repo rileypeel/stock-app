@@ -1,6 +1,6 @@
 <template>
   <div >
-    <el-menu router="true" id='navbar' :default-active="activeIndex" text-color="white" active-text-color="#ffd04b" background-color="#545c64" class="el-menu container" mode="horizontal" @select="handleSelect">
+    <el-menu :router="true" id='navbar' :default-active="activeIndex" text-color="white" active-text-color="#ffd04b" background-color="#545c64" class="el-menu container" mode="horizontal" @select="handleSelect">
       <el-menu-item index="/user">Profile</el-menu-item>
       <el-menu-item index="/portfolio"><router-link to='/portfolio'>Portfolio</router-link></el-menu-item>
       <el-menu-item index="/stocks">Stocks</el-menu-item>

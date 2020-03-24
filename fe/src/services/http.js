@@ -54,9 +54,7 @@ const httpService = {
       var data = await response.json();
       return data;
     }
-  },
-  async newget(path) {
-    return fetch(addr(path), getBody(httpGet));
+    return false;
   },
   // POST request
   post: async (path, data) => fetch(addr(path), body(httpPost, data)),

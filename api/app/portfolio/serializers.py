@@ -50,3 +50,14 @@ class StockSerializer(serializers.ModelSerializer):
         model = Stock
         fields = ('id', 'name', 'ticker')
         read_only_fields = ('id',)
+
+class HoldingSerializer(serializers.ModelSerializer):
+    """Serializer for Holding objects"""
+    
+    stock = serializers.StringRelatedField()
+    portfolio = serializers.StringRelatedField()
+    
+    class Meta:
+        model = Holding
+        fields = ('id', 'stock', 'portfolio', 'number_of_shares')
+        read_only_fields = ('id',)

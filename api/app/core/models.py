@@ -85,7 +85,7 @@ class Holding(models.Model):
     stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
     portfolio = models.ForeignKey(
         'Portfolio', related_name='holdings', on_delete=models.CASCADE)
-
+    
     def __str__(self):
         """String representaion of a holding"""
         return f"{self.number_of_shares} shares of {self.stock}"

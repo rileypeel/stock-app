@@ -47,7 +47,7 @@ class StockDetail(APIView):
         """Return a detail view of a stock"""
         try:
             stock = Stock.objects.get(ticker=ticker)
-        except Stock.NotFoundError:
+        except Stock.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = serializers.StockSerializer(stock)
@@ -202,3 +202,20 @@ class TransactionDetailView(APIView):
 
         serializer = serializers.TransactionSerializer(transaction)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+class HoldingView(APIView):
+    """Endpoint for holding objects"""
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, portfolio_id):
+        """Return holding objects associated with portfolio_id"""
+        holdings = Holding.objects.filter(id=portfolio_id)
+
+        if not holdings:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = serializers.HoldingSerializer(holdings, many=True)
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+
