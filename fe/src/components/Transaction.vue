@@ -2,7 +2,7 @@
   <div class="Transaction">
     <el-form status-icon :model="trans" ref='transactionForm'>
       <el-form-item prop="ticker" label="Stock Symbol">
-        <el-input  v-model="transaction.ticker"></el-input>
+        <el-input  v-model="trans.ticker"></el-input>
       </el-form-item>
       <el-button @click="getQuote()">Get Quote</el-button>
       <el-form-item prop="numberOfShares" label="# of shares">
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-//import tickerService from '../services/ticker.js';
+import tickerService from '../services/ticker.js';
 //import portfolioService from '../services/portfolio.js';
 export default {
   name: "Transaction",
@@ -30,7 +30,7 @@ export default {
 
   methods: {
     getQuote() {
-
+      tickerService.getQuote(this.trans.ticker);
     }
   }
 }

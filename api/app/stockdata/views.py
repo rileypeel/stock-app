@@ -136,3 +136,26 @@ class MinutePrices(APIView):
         serializer = serializers.TimeSeriesSerializer(
             list(aggregated_data), many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+class Quote(APIView):
+    """Endpoint for stock quotes."""
+
+    def get(self, request, ticker):
+        """Get quote for ticker"""
+
+        try:
+            stock = Stock.objects.get(ticker=ticker)
+        except Stock.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        update_stock(stock)
+
+        try:
+            quote = DailyPrice.objects.filter(stock=stock).latest()
+        except DailyPrice.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = DailyPriceSerializer(quote)
+
+        return Response(status=status.HTTP_200_OK, serializer.data)
+

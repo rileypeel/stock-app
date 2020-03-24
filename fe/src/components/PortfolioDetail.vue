@@ -2,6 +2,7 @@
   <div class="portfolioDetail">
    <Navigation/>
     <p>{{ $route.params.id }}</p>
+    <router-link to='/transaction'>Transacttion</router-link>
   </div>  
 </template>
 

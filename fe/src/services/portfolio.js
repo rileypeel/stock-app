@@ -17,7 +17,7 @@ const portfolioService = {
   },
   async getHoldings(id) {
     //return holdings for a portfolio
-    var holdings = await httpService.get('urlhere'.concat(id))
+    var holdings = await httpService.get('api/portfolio/'.concat(id, '/holdings'))
     return holdings
   },
 

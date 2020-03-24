@@ -29,7 +29,8 @@ const router = new Router({
     { path: '/portfolio', name: 'Portfolio', component: Portfolio, meta: { requiresAuth: true } },
     { path: '/portfolio/:id', name: 'PortfolioDetail', component: PortfolioDetail, meta: { requiresAuth: true } },
     { path: '/stocks', name: 'Stock', component: Stock, meta: { requiresAuth: true } },
-    { path: '/stocks/:ticker', name: 'StockDetail', component: StockDetail, meta: { requiresAuth: true } }
+    { path: '/stocks/:ticker', name: 'StockDetail', component: StockDetail, meta: { requiresAuth: true } },
+    { path: '/transaction', name: 'Transaction', component: Transaction, meta: { requiresAuth: true } }
      
   ]
 });
