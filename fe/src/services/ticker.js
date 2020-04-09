@@ -27,7 +27,7 @@ const tickerService = {
     return data;
   },
   
-  async quote(ticker) {
+  async getQuote(ticker) {
     var quote = await httpService.get('api/stockdata/quote/'.concat(ticker));
     return quote;
   }

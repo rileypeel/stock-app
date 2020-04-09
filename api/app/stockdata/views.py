@@ -151,11 +151,11 @@ class Quote(APIView):
         update_stock(stock)
 
         try:
-            quote = DailyPrice.objects.filter(stock=stock).latest()
+            quote = DailyPrice.objects.filter(stock=stock).latest('time_stamp')
         except DailyPrice.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = DailyPriceSerializer(quote)
+        serializer = serializers.DailyPriceSerializer(quote)
 
-        return Response(status=status.HTTP_200_OK, serializer.data)
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
 

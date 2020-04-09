@@ -13,6 +13,8 @@ const portfolioService = {
   async getPortfolio(id) {
     // get a portfolio by its id
     var portfolio = await httpService.get('api/portfolio/'.concat(id));
+    console.log(portfolio)
+    console.log("getting portfolio")
     return portfolio;
   },
   async getHoldings(id) {
@@ -41,16 +43,14 @@ const portfolioService = {
     var transactions = await httpService.get('api/portfolio/'.concat(portfolioId, '/transaction'));
     return transactions;
   },
-  async newTransaction(tickerId, portfolioId, amount, isBuy, price) {
+  async newTransaction(payload, portfolioId) {
     // make a new transaction
-    var payload = {
-      is_buy: isBuy,
-      number_of_shares: amount,
-      price_per_share: price, 
-      stock_id: tickerId,
-      portfolio_id: portfolioId
+    var response = await httpService.post('api/portfolio/'.concat(portfolioId, '/transaction'), payload);
+    if(response.status == 201) {
+      return true;
+    } else {
+      return false;
     }
-    httpService.post('api/portfolio/'.concat(portfolioId, '/transaction'), payload);
   },
 }
 

@@ -16,4 +16,5 @@ urlpatterns = [
          views.TransactionDetailView.as_view(), name='transaction-detail'),
     path('<int:id>/transaction',
          views.TransactionView.as_view(), name='transaction-list')
+    
 ]

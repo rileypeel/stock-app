@@ -3,8 +3,9 @@
     <Navigation/>
     <div v-if="loading" class="loading">
     Loading...
+     <el-button @click="updatePortfolios()">click here if page doesn't load</el-button>
     </div>
-    <div v-if="portfolios" class="content">
+    <div class="content">
       <h1>Portfolios</h1>
         <el-dialog custom-class="dialog" title="Portfolio" :visible.sync="dialogFormVisible">
           <el-form :model="newPortfolio">
@@ -20,7 +21,6 @@
             <el-button class="button" type="primary" @click="submitForm(); dialogFormVisible = false">Confirm</el-button>
           </span>
         </el-dialog>
-
         <el-table
           :data="portfolios"
           stripe
@@ -29,7 +29,7 @@
             prop="name"
             label="Name"
             width="180">
-            <template slot-scope="scope"><router-link :to="{ name: 'PortfolioDetail', params: { id: portfolios[scope.$index].id }}">{{ scope.row.name }}</router-link></template>
+            <template slot-scope="scope"><router-link :to="{ name: 'PortfolioDetail', params: { id: portfolios[scope.$index].id }} ">{{ scope.row.name }}</router-link></template>
           </el-table-column>
           <el-table-column
             prop="balance"
@@ -52,7 +52,6 @@
         <div style="margin-top: 20px">
           <el-button @click="dialogFormVisible = true">Create new portfolio</el-button>
         </div>      
-    
     </div>
   </div>
 </template>
@@ -79,7 +78,6 @@ export default {
       formLabelWidth: '120px'
     }
   },
-
   methods: {
     submitForm() {
       portfolioService.newPortfolio(this.newPortfolio).then((success) => {
@@ -91,7 +89,6 @@ export default {
             message: 'Error, portfolio not created.',
             type: 'error',
             duration: 2000
-        
           });
         }
       }).catch((err) => {
@@ -99,16 +96,17 @@ export default {
       });
     },
     updatePortfolios() {
-      console.log(
       portfolioService.getPortfolios().then((result) => {
         this.portfolios = result;
-        this.loading = null;
+        this.loading = false;
+      }).catch((err) => {
+        console.log(err)
       })
-      )
+      
     },
     deletePortfolio(index) {
       console.log(index)
-      //portfolioService.deletePortfolio(this.portfolios[index].id);
+      //todo delete the portfolio
     }
   }, 
   mounted: function() {
@@ -117,7 +115,6 @@ export default {
 }
 
 </script>
-
 
 <style>
 .portfolio{

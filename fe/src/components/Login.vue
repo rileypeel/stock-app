@@ -4,7 +4,7 @@
       <el-col :offset="9" :span="6">
         <h1>Very Cool Stock Application</h1>
         <el-form status-icon :model="userCredentials" ref='loginForm'>
-          <el-form-item :rules="[{required: true, message: 'Email address is required', trigger:'blur'}, {type: 'email', message: 'please enter valid email address', trigger:['blur', 'change']}]" prop="email" label="Email">
+          <el-form-item :rules="[{required: true, message: 'Email address is required', trigger:'blur'}, {type: 'email', message: 'please enter valid email address', trigger:['blur']}]" prop="email" label="Email">
             <el-input  v-model="userCredentials.email"></el-input>
           </el-form-item>
           <el-form-item :rules="[{required: true, message: 'Password is required', trigger:'blur'}]" prop="password" label="Password">

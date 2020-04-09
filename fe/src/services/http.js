@@ -3,7 +3,7 @@
 // constants
 
 // api address
-const api = 'http://0.0.0.0:8000/'
+const api = 'http://localhost:8000/'
 
 // http methods
 const httpGet = 'GET'
@@ -37,12 +37,11 @@ var header = () => {
   var token = localStorage.getItem('token');
   if(token != null) {
     header.append('Authorization', ''.concat('Token ', token));
-    
   }
   return header;
 }
 // create the fetch() body
-var body = (method, data) => ({method, headers:header(), body:json(data)})
+var body = (method, data) => ({method, headers:header(), body: json(data)})
 
 var getBody = (method) => ({method, headers:header()})
 // service object
