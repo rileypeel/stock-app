@@ -65,7 +65,6 @@
               <p v-if="scope.row.is_buy">Buy</p>
               <p v-else>Sell</p>
             </template>
-
           </el-table-column>
           <el-table-column
             prop="number_of_shares"
@@ -84,8 +83,7 @@
           </el-table-column>
         </el-table>
       </el-collapse-item>
-    </el-collapse>
-    
+    </el-collapse> 
   </div>  
 </template>
 
@@ -126,10 +124,8 @@ export default {
       });
     },
     getPortfolioDetail() {
-      console.log("namenamename")
       portfolioService.getPortfolio(this.portfolioId).then((data) => {
         this.portfolioName = data['name']
-        console.log("i have the name")
       });   
     }
   },

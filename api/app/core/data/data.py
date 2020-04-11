@@ -2,10 +2,11 @@ from core.models import Stock, DailyPrice, MinutePrice
 import datetime
 import pytz
 import json
-from requests import get
-from core.data.api_keys import ALPHA_VANTAGE_KEY
+import requests
+
+from core.data.api_keys import ALPHA_VANTAGE_KEY, WORLD_TRADING_DATA_KEY, FINNHUB_KEY
 from time import sleep
-from core.data.api_urls import TIME_SERIES_URL, QUOTE_URL, INTRADAY_TIME_SERIES_URL
+from core.data.api_urls import TIME_SERIES_URL, QUOTE_URL, INTRADAY_TIME_SERIES_URL, FINNHUB_CANDLE_URL
 
 
 default_stock_list = ['GE', 'GIS', 'GOOG', 'MSFT', 'AAPL', 'TSLA', 'MMM', 'HD',
@@ -14,6 +15,12 @@ default_stock_list = ['GE', 'GIS', 'GOOG', 'MSFT', 'AAPL', 'TSLA', 'MMM', 'HD',
                       ]
 intraday_stocks = ['GOOG', 'EKSO']
 
+def check_data(data):
+    """Check to make sure data returned from API is valid"""
+    if 'Time Series (Daily)' not in data:
+        if 'Time Series (1min)' not in data:
+            return False
+    return True
 
 def is_intraday(stock):
     """Returns true if stock has intraday data."""
@@ -58,23 +65,25 @@ def get_intraday(ticker, all_data, interval):
     if not all_data:
         data_size = 'compact'
     try:
-        res = get(
+        res = requests.get(
             f"""{INTRADAY_TIME_SERIES_URL}&outputsize={data_size}&symbol={ticker}&interval={interval}&apikey={ALPHA_VANTAGE_KEY}&datatype=json""")
     except requests.exception.RequestExceptions:
         return None
-
-    if res.status_code == 200:
-        return json.loads(res.text)
+    data = json.loads(res.text)
+    if res.status_code == 200 and check_data(data):
+        return data
     else:
+        print(f"Error retrieving intraday data for {ticker}")
         return None
 
 
 def get_quote(ticker):
     """Get stock quote from alphavantage"""
     try:
-        res = get(f"""{QUOTE_URL}&symbol={ticker}&outputsize=full&apikey={ALPHA_VANTAGE_KEY}&datatype=json"""
+        res = requests.get(f"""{QUOTE_URL}&symbol={ticker}&outputsize=full&apikey={ALPHA_VANTAGE_KEY}&datatype=json"""
                   )
-    except requests.exception.RequestExceptions:
+    except:
+
         return None
 
     if res.status_code == 200:
@@ -87,8 +96,19 @@ def get_fundamentals(ticker):
     """Given a ticker make an API call to get the companies name and fundamental info"""
     pass
 
+def get_daily_fh(ticker, time_from='946684800', time_to='1577836800'):
+    """Get historical daily data from world trading data api"""
+    try:
+        res = requests.get(f"""{FINNHUB_CANDLE_URL}?symbol={ticker}&resolution=D&from={time_from}&to={time_to}&token={FINNHUB_KEY}""")
+    except:
+        return None
 
-def get_daily(ticker, all_data):
+    if res.status_code == 200:
+        return json.loads(res.text)
+    else:
+        return None
+
+def get_daily_alpha(ticker, all_data):
     """Get historical daily price data from alphavantage"""
 
     data_size = 'full'
@@ -96,15 +116,16 @@ def get_daily(ticker, all_data):
         data_size = 'compact'
 
     try:
-        res = get(
+        res = requests.get(
             f"{TIME_SERIES_URL}&symbol={ticker}&outputsize={data_size}&apikey={ALPHA_VANTAGE_KEY}&datatype=json")
     except requests.exception.RequestExceptions:
         print(f"Error retrieving data for {ticker}")
-
-    if res.status_code == 200:
-        return json.loads(res.text)
+    data = json.loads(res.text)
+    if res.status_code == 200 and check_data(data):
+        return data
     else:
         print(f"Error retrieving data for {ticker}")
+        return None
 
 
 def add_stock_to_db(ticker):
@@ -179,7 +200,10 @@ def add_daily_data(stock, last_date=None):
 
     all_data = is_full(last_date)
 
-    data = get_daily(stock.ticker, all_data)['Time Series (Daily)']
+    data = get_daily_alpha(stock.ticker, all_data)
+    if data is None:
+        return
+    data = data['Time Series (Daily)']
     for key in data.keys():
         timestamp = get_datetime(key)
         if last_date:
@@ -202,6 +226,8 @@ def add_intraday_data(stock, last_time=None):
     """
     all_data = is_full_intra(last_time)
     data = get_intraday(stock, all_data, '1min')
+    if data is None:
+        return
     data = data['Time Series (1min)']
 
     for key in data.keys():

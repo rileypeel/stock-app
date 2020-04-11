@@ -7,7 +7,7 @@ from django.db.models.functions import Trunc
 from django.db.models import F, Avg, DateTimeField
 import pytz
 import datetime
-from core.data.data import update_stock
+from core.data.data import update_stock, get_daily_fh
 from core.models import MinutePrice, DailyPrice, Stock
 from core.data.data import is_intraday
 from stockdata import serializers
@@ -37,12 +37,16 @@ class DailyPrices(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, id):
+    def get(self, request, ticker):
         """Return all stocks in the database"""
         try:
-            stock = Stock.objects.get(id=id)
+            stock = Stock.objects.get(ticker=ticker)
         except Stock.DoesNotExist:
-            return Response(status.HTTP_404_NOT_FOUND)
+            data = get_daily_fh(ticker)
+            if data:
+                return Response(data=data, status=status.HTTP_200_OK)
+            else:
+                return Response(status.HTTP_404_NOT_FOUND)
 
         update_stock(stock)
         start_date = request.GET.get('date', '2000-01-01')
@@ -55,11 +59,11 @@ class DailyPrices(APIView):
         monthly = request.GET.get('monthly', False)
         yearly = request.GET.get('yearly', False)
         trunc_interval = ''
-        if weekly:
+        if weekly == '1':
             trunc_interval = 'week'
-        elif monthly:
+        elif monthly == '1':
             trunc_interval = 'month'
-        elif yearly:
+        elif yearly == '1':
             trunc_interval = 'year'
         else:
             serializer = serializers.DailyPriceSerializer(queryset, many=True)
@@ -111,7 +115,7 @@ class MinutePrices(APIView):
 
         hourly = request.GET.get('hourly', False)
         trunc_interval = ''
-        if hourly:
+        if hourly == '1':
             trunc_interval = 'hour'
         else:
             serializer = serializers.MinutePriceSerializer(queryset, many=True)
