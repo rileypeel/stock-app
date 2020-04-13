@@ -47,6 +47,10 @@ function FakeTicker(view) {
       if (!nextIndex) {
         this.newEntry()
       }
+      var past = this.window.data.past
+      var current = this.window.data.current
+      
+      view.setData(past.concat({ ...current }))
       setTimeout(() => this.runTicker(nextIndex), 1000 / this.window.refreshRate)
     },
     newEntry() {
@@ -59,14 +63,14 @@ function FakeTicker(view) {
       }
 
       past = past.concat({ ...current})
-      view.setPastData(past)
+      //view.setPastData(past)
 
       this.window.data.current = { hi: current.y, lo: current.y, y: current.y}
       this.window.data.past = past
     },
     updateEntry() {
       // update the current entry on the view
-      view.setCurrentData(this.window.data.current)
+      //view.setCurrentData(this.window.data.current)
     },
     simulateStock() {
       // simulate a stock object, with a current value (y), high, and low
