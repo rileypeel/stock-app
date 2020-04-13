@@ -1,10 +1,17 @@
 <template>
-  <div class="user">User</div>  
+  <div class="user">
+   <Navigation/>
+    User
+  </div>  
 </template>
 
 <script>
+import Navigation from './Navigation.vue';
 export default {
-  name: "User"
+  name: "User",
+  components : {
+    Navigation
+  }
 }
 </script>
 

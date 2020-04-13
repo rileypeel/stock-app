@@ -5,8 +5,9 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
-from core.models import Stock, Portfolio, Holding, Transaction
+from core.models import Stock, Portfolio, Holding, Transaction, DailyPrice
 from portfolio import serializers
+from core.data.data import update_stock
 
 # maybe update holdings and portfolio helper functions
 
@@ -43,11 +44,11 @@ class StockDetail(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, id):
+    def get(self, request, ticker):
         """Return a detail view of a stock"""
         try:
-            stock = Stock.objects.get(id=id)
-        except Stock.NotFoundError:
+            stock = Stock.objects.get(ticker=ticker)
+        except Stock.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = serializers.StockSerializer(stock)
@@ -61,10 +62,12 @@ class PortfolioView(APIView):
 
     def get(self, request):
         """return portfolios assigned to user"""
+        print("hit endpoint")
         portfolios = Portfolio.objects.filter(
             user=self.request.user).distinct()
         serializer = serializers.PortfolioSerializer(portfolios, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+        
 
     def post(self, request):
         """Create a new portfolio"""
@@ -140,25 +143,30 @@ class TransactionView(APIView):
         if self.request.user != portfolio.user:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         try:
-            stock = Stock.objects.get(id=request.data['stock_id'])
+            stock = Stock.objects.get(ticker=request.data['ticker'])
         except Stock.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
         try:
             holding = Holding.objects.filter(
                 portfolio=portfolio).get(stock=stock)
         except Holding.DoesNotExist:
             holding = None
+        
+        if request.data['order_type'] == 'Market':
+            #update_stock(stock)
+            ##add try except
+            request.data['price'] = 1#DailyPrice.objects.filter(stock=stock).latest('time_stamp').close_price
 
         context = {'portfolio': portfolio, 'stock': stock, 'holding': holding}
         serializer = serializers.TransactionSerializer(
             data=request.data, context=context)
+        print(request.data)
 
         if serializer.is_valid():
             num_shares = int(request.data['number_of_shares'])
-            price = float(request.data['price_per_share'])*num_shares
+            price = float(request.data['price'])*num_shares
 
-            if request.data['is_buy'] == 'True':
+            if request.data['is_buy'] == True:
                 if holding is None:
                     Holding.objects.create(
                         portfolio=portfolio,
@@ -202,3 +210,21 @@ class TransactionDetailView(APIView):
 
         serializer = serializers.TransactionSerializer(transaction)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+class HoldingView(APIView):
+    """Endpoint for holding objects"""
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        """Return holding objects associated with portfolio_id"""
+        try:
+            portfolio = Portfolio.objects.get(id=id)
+        except Portfolio.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        holdings = Holding.objects.filter(portfolio=portfolio)
+        serializer = serializers.HoldingSerializer(holdings, many=True)
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+

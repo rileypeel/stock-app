@@ -76,7 +76,7 @@ class ModelTests(TestCase):
             is_buy=True,
             portfolio=portfolio,
             stock=stock,
-            price_per_share=100.00,
+            price=100.00,
             number_of_shares=100
         )
         self.assertEqual(

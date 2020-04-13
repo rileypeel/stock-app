@@ -55,7 +55,7 @@ class UserApiTests(TestCase):
         """Test retrieving stock detail view"""
         stock1 = Stock.objects.create(name='Apple Inc', ticker='AAPL')
         stock2 = Stock.objects.create(name='Tesla Inc', ticker='TSLA')
-        res = self.client.get(get_stock_detail_url(stock2.id))
+        res = self.client.get(get_stock_detail_url(stock2.ticker))
 
         serializer = StockSerializer(stock2)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
