@@ -144,8 +144,6 @@ class TransactionView(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         try:
             stock = Stock.objects.get(ticker=request.data['ticker'])
-            
-            request.data.pop('ticker')
         except Stock.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         try:
@@ -155,9 +153,9 @@ class TransactionView(APIView):
             holding = None
         
         if request.data['order_type'] == 'Market':
-            update_stock(stock)
+            #update_stock(stock)
             ##add try except
-            request.data['price'] = DailyPrice.objects.filter(stock=stock).latest('time_stamp').close_price
+            request.data['price'] = 1#DailyPrice.objects.filter(stock=stock).latest('time_stamp').close_price
 
         context = {'portfolio': portfolio, 'stock': stock, 'holding': holding}
         serializer = serializers.TransactionSerializer(

@@ -45,3 +45,19 @@ class MinutePriceSerializer(serializers.ModelSerializer):
             'volume',
         )
         read_only_fields = ('id',)
+
+class DataSerializer(serializers.Serializer):
+    """data"""
+    time_stamp = serializers.DateTimeField()
+    open_price = serializers.DecimalField(max_digits=12, decimal_places=3)
+    close_price = serializers.DecimalField(max_digits=12, decimal_places=3)
+    high_price = serializers.DecimalField(max_digits=12, decimal_places=3)
+    low_price = serializers.DecimalField(max_digits=12, decimal_places=3)
+    volume = serializers.IntegerField()
+
+
+
+
+
+
+
