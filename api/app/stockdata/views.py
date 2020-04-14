@@ -11,10 +11,20 @@ from core.data.data import update_stock
 from core.models import MinutePrice, DailyPrice, Stock
 from core.data.data import is_intraday
 from stockdata import serializers
+from portfolio.serializers import StockSerializer
+from core.data.finnhub_data import get_data as get_data_fh
+
+
+##testing
+
+from core.data.simfin_data import get_data
 
 
 def parse_datetime(datetime_str):
     """helper fucntion for parsing date and times given in query params"""
+
+    if datetime_str is 'now':
+        return pytz.utc.localize(datetime.datetime.now())
     try:
         timestamp = datetime.datetime.strptime(
             datetime_str, '%Y-%m-%d-%H-%M-%S')
@@ -37,12 +47,16 @@ class DailyPrices(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, id):
+    def get(self, request, ticker):
         """Return all stocks in the database"""
         try:
-            stock = Stock.objects.get(id=id)
+            stock = Stock.objects.get(ticker=ticker)
         except Stock.DoesNotExist:
-            return Response(status.HTTP_404_NOT_FOUND)
+            data = get_daily_fh(ticker)
+            if data:
+                return Response(data=data, status=status.HTTP_200_OK)
+            else:
+                return Response(status.HTTP_404_NOT_FOUND)
 
         update_stock(stock)
         start_date = request.GET.get('date', '2000-01-01')
@@ -55,11 +69,11 @@ class DailyPrices(APIView):
         monthly = request.GET.get('monthly', False)
         yearly = request.GET.get('yearly', False)
         trunc_interval = ''
-        if weekly:
+        if weekly == '1':
             trunc_interval = 'week'
-        elif monthly:
+        elif monthly == '1':
             trunc_interval = 'month'
-        elif yearly:
+        elif yearly == '1':
             trunc_interval = 'year'
         else:
             serializer = serializers.DailyPriceSerializer(queryset, many=True)
@@ -111,7 +125,7 @@ class MinutePrices(APIView):
 
         hourly = request.GET.get('hourly', False)
         trunc_interval = ''
-        if hourly:
+        if hourly == '1':
             trunc_interval = 'hour'
         else:
             serializer = serializers.MinutePriceSerializer(queryset, many=True)
@@ -136,3 +150,52 @@ class MinutePrices(APIView):
         serializer = serializers.TimeSeriesSerializer(
             list(aggregated_data), many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+class Quote(APIView):
+    """Endpoint for stock quotes."""
+
+    def get(self, request, ticker):
+        """Get quote for ticker"""
+        #finnhub quote
+
+
+class CompanyInfo(APIView):
+    """Endpoint for company info"""
+
+    def get(self, request, ticker):
+        """get info for ticker"""
+        data=get_data(ticker)
+        return Response(status=status.HTTP_200_OK, data=data)
+
+
+class FinnhubData(APIView):
+    """Endpoint for stock price data"""
+
+    def get(self, request, ticker):
+        """"""
+
+        time_from = request.GET.get('from', '2000-01-01-00-00-00')
+        time_to = request.GET.get('to', 'now')
+        resolution = request.GET.get('resolution', 'D')
+        time_from = parse_datetime(time_from)
+        time_to = parse_datetime(time_to)
+        data = get_data_fh(ticker, time_from, time_to, resolution)
+        serializer = serializers.DataSerializer(data, many=True)
+
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+
+class StockSearch(APIView):
+    """Endpoint for searching if a stock exists"""
+
+    def get(self, request, ticker_str):
+        """ """
+        try: 
+            stocks = Stock.objects.filter(ticker__istartswith=ticker_str)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = StockSerializer(stocks, many=True)
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+

@@ -3,7 +3,7 @@
     <el-row>
       <el-col :offset="9" :span="6">
         <h1>Very Cool Stock Application</h1>
-        <el-form status-icon :model="userCredentials" ref='RegisterForm'>
+        <el-form status-icon :model="userCredentials" ref='registerForm'>
           <el-form-item :rules="[{required: true, message: 'Name is required', trigger:'blur'}]" prop="name" label="Name">
             <el-input  v-model="userCredentials.name"></el-input>
           </el-form-item>
@@ -24,50 +24,57 @@
 </template>
 
 <script>
-import httpService from '../services/http.js';
+import userService from '../services/user.js';
 export default {
   name: "Register",
   data () {
     return {
       userCredentials: {
-        name:'',
-        email:'',
-        password:''
+        name: '',
+        email: '',
+        password: ''
       },
     }
   },
   methods: {
     submitForm() {
-
-      this.$refs['RegisterForm'].validate((valid) => {
-        if(valid){
-          //redirect to log in page
-          //make sure account was created succesfully
-          httpService.post('api/user/create/', this.userCredentials).then((response) => {
-            if(response.status == 201){
-              console.log("Created succesfully")
-              this.$router.push("Login")
-            }else{
-              console.log("Not created")
+      this.$refs['registerForm'].validate((valid) => {
+        if(valid) {
+          userService.newUser(this.userCredentials).then((success) => {
+            if(success) {
+              this.$notify({
+                title: 'Success',
+                message: 'You have successfully created an account.',
+                type: 'success',
+                duration: 2000
+              });
+              this.$router.push("Login");
+            } else {
+              this.$notify({
+                title: 'Error',
+                message: 'Account was not created, Email address may already be taken.',
+                type: 'error',
+                duration: 2000
+              });
             }
-          }
-          );
-          alert('registering')
-        }else{
-          alert('Please enter ')
+          });
+        } else {
+          this.$notify({
+            title: 'Error',
+            message: 'Please enter valid input.',
+            type: 'error',
+            duration: 2000
+          });
         }
       });
-      
-      
     }
   }
 }
-
 </script>
 
 
 <style>
-.register{
+.register {
 	font-weight:bold;
 } 
 </style>

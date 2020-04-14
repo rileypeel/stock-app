@@ -3,8 +3,8 @@
     <el-row>
       <el-col :offset="9" :span="6">
         <h1>Very Cool Stock Application</h1>
-        <el-form status-icon :model="userCredentials" ref='LoginForm'>
-          <el-form-item :rules="[{required: true, message: 'Email address is required', trigger:'blur'}, {type: 'email', message: 'please enter valid email address', trigger:['blur', 'change']}]" prop="email" label="Email">
+        <el-form status-icon :model="userCredentials" ref='loginForm'>
+          <el-form-item :rules="[{required: true, message: 'Email address is required', trigger:'blur'}, {type: 'email', message: 'please enter valid email address', trigger:['blur']}]" prop="email" label="Email">
             <el-input  v-model="userCredentials.email"></el-input>
           </el-form-item>
           <el-form-item :rules="[{required: true, message: 'Password is required', trigger:'blur'}]" prop="password" label="Password">
@@ -22,29 +22,48 @@
 </template>
 
 <script>
-import httpService from '../services/http.js';
+import userService from '../services/user.js';
 export default {
   name: "Login",
   data () {
     return {
       userCredentials: {
-        email:'',
-        password:''
+        email: '',
+        password: ''
       },
     }
   },
   methods: {
     submitForm() {
-
-      this.$refs['LoginForm'].validate((valid) => {
-        if(valid){
-          alert('Logging in')
-        }else{
-          alert('not logging in')
+      this.$refs['loginForm'].validate((valid) => {
+        if(valid) {
+          userService.login(this.userCredentials).then((success) => {
+            if(success) {
+              this.$notify({
+                title: 'Success',
+                message: '',
+                type: 'success',
+                duration: 2000
+              });
+              this.$router.push("User");
+            } else {
+              this.$notify({
+                title: 'Error',
+                message: 'Login failed, please try again.',
+                type: 'error',
+                duration: 2000
+              });
+            }
+          });         
+        } else {
+          this.$notify({
+            title: 'Error',
+            message: 'Please enter valid username and password.',
+            type: 'error',
+            duration: 2000
+          });
         }
       });
-      var res = httpService.post('api/user/create/', this.userCredentials)
-      console.log(res);
     }
   }
 }
@@ -53,12 +72,6 @@ export default {
 
 <style>
 .login {
-  font-weight: bold;
+  font-weight:bold;
 }
-.button{
-	border-radius:30px;
-	background-color:rgba(37,33,83,.6);
-	border-color:rgba(37,33,83,.6);
-}
-
 </style>
