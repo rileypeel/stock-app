@@ -1,8 +1,3 @@
-// service for fetching/caching ticker data
-
-// constants
-
-// private variables and functions
 
 // service object
 const tickerService = {
@@ -17,4 +12,5 @@ const tickerService = {
   },
 }
 
-export default tickerService 
+
+export default tickerService;
