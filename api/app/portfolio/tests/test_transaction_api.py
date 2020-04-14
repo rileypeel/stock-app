@@ -48,7 +48,7 @@ class PublicApiTests(TestCase):
             portfolio=portfolio,
             stock=stock,
             is_buy=True,
-            price_per_share=100,
+            price=100,
             number_of_shares=1
         )
         res = self.client.get(transaction_url(portfolio.id))
@@ -65,8 +65,8 @@ class PublicApiTests(TestCase):
             'is_buy': True,
             'price_per_share': 150.00,
             'number_of_shares': 2,
-            'stock_id': stock.id,
-            'portfolio_id': portfolio.id
+            'ticker': stock.ticker,
+            'order_type': 'Limit'
         }
         res = self.client.post(transaction_url(portfolio.id), payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -90,15 +90,17 @@ class PrivateApiTests(TestCase):
             portfolio=portfolio1,
             stock=stock1,
             is_buy=True,
-            price_per_share=100,
-            number_of_shares=2
+            price=100,
+            number_of_shares=2,
+            order_type='Market'
         )
         transaction2 = Transaction.objects.create(
             portfolio=portfolio2,
             stock=stock2,
             is_buy=True,
-            price_per_share=100,
-            number_of_shares=2
+            price=100,
+            number_of_shares=2,
+            order_type='Market'
         )
         serializer1 = TransactionSerializer(transaction1)
         serializer2 = TransactionSerializer(transaction2)
@@ -116,8 +118,9 @@ class PrivateApiTests(TestCase):
             portfolio=portfolio,
             stock=stock,
             is_buy=True,
-            price_per_share=100,
-            number_of_shares=2
+            price=100,
+            number_of_shares=2,
+            order_type='Market'
         )
         res = self.client.get(transaction_detail_url(transaction.id))
         serializer = TransactionSerializer(transaction)
@@ -132,8 +135,8 @@ class PrivateApiTests(TestCase):
             'is_buy': True,
             'price_per_share': 150.00,
             'number_of_shares': 2,
-            'stock_id': stock.id,
-            'portfolio_id': portfolio.id
+            'ticker': stock.ticker,
+            'order_type': 'Market'
         }
 
         initial_balance = getattr(portfolio, 'balance')
@@ -144,7 +147,7 @@ class PrivateApiTests(TestCase):
         self.assertEqual(
             portfolio.balance,
             initial_balance -
-            payload['price_per_share']*payload['number_of_shares']
+            payload['price']*payload['number_of_shares']
         )
 
         holdings = Holding.objects.filter(portfolio=portfolio)
@@ -154,8 +157,7 @@ class PrivateApiTests(TestCase):
         for key in payload.keys():
             self.assertEqual(payload[key], getattr(transaction, key))
 
-        self.assertEqual(str(stock), str(transaction.stock)
-                         )  # not sure about this yet
+        self.assertEqual(str(stock), str(transaction.stock)) 
         self.assertEqual(str(portfolio), str(transaction.portfolio))
 
         res = self.client.post(transaction_url(portfolio.id), payload)
@@ -170,8 +172,8 @@ class PrivateApiTests(TestCase):
             'is_buy': True,
             'price_per_share': 150.00,
             'number_of_shares': 2,
-            'stock_id': stock.id,
-            'portfolio_id': portfolio.id
+            'ticker': stock.ticker,
+            'order_type':'Market'
         }
         res = self.client.post(transaction_url(portfolio.id), payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
@@ -184,16 +186,16 @@ class PrivateApiTests(TestCase):
         holding = Holding.objects.create(
             stock=stock,
             portfolio=portfolio,
-            number_of_shares=4
+            number_of_shares=4,
         )
-        payload = {'is_buy': False, 'price_per_share': 200.00,
-                   'number_of_shares': 2, 'stock_id': stock.id}
+        payload = {'is_buy': False, 'price': 200.00,
+                   'number_of_shares': 2, 'ticker': stock.ticker, 'order_type': 'Market'}
         res = self.client.post(transaction_url(portfolio.id), payload)
         portfolio.refresh_from_db()
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             portfolio.balance,
-            initial_balance+payload['price_per_share'] *
+            initial_balance+payload['price'] *
             payload['number_of_shares']
         )
         transaction = Transaction.objects.get(id=res.data['id'])
@@ -229,7 +231,8 @@ class PrivateApiTests(TestCase):
             'is_buy': False,
             'price_per_share': 150.00,
             'number_of_shares': 400,
-            'stock_id': stock.id
+            'ticker': stock.ticker,
+            'order_type':'Market'
         }
         res = self.client.post(transaction_url(portfolio.id), payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

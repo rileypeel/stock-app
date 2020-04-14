@@ -96,18 +96,6 @@ def get_fundamentals(ticker):
     """Given a ticker make an API call to get the companies name and fundamental info"""
     pass
 
-def get_daily_fh(ticker, time_from='946684800', time_to='1577836800'):
-    """Get historical daily data from world trading data api"""
-    try:
-        res = requests.get(f"""{FINNHUB_CANDLE_URL}?symbol={ticker}&resolution=D&from={time_from}&to={time_to}&token={FINNHUB_KEY}""")
-    except:
-        return None
-
-    if res.status_code == 200:
-        return json.loads(res.text)
-    else:
-        return None
-
 def get_daily_alpha(ticker, all_data):
     """Get historical daily price data from alphavantage"""
 
@@ -261,12 +249,12 @@ def update_prices():
     for s in stocks:
         latest_price = DailyPrice.objects.filter(stock=s).latest('time_stamp')
         add_daily_data(s, last_date=latest_price.time_stamp)
-        sleep(15)
+        #sleep(15)
         if s.ticker in intraday_stocks:
             latest_intra_price = MinutePrice.objects.filter(
                 stock=s).latest('time_stamp')
             add_intraday_data(s, last_time=latest_intra_price.time_stamp)
-            sleep(15)
+           # sleep(15)
 
 
 def update_stock(stock):

@@ -2,13 +2,15 @@
   <div class="stock">
    <Navigation/>
     <p>Stocks</p>
-    <el-form >
-      <el-form-item >
-        <el-input v-model="symbol"></el-input>
-      </el-form-item>
-      <el-button @click="search(symbol)">Search!</el-button>
-    </el-form>
-    <p>{{ message }}</p>
+    <div class="sub-title">Search</div>
+    <el-autocomplete
+      class="inline-input"
+      v-model="userinput"
+      :fetch-suggestions="querySearch"
+      placeholder="Stock Symbol"
+      :trigger-on-focus="false"
+      @select="handleSelect"
+    ></el-autocomplete>
   </div>  
 </template>
 
@@ -24,7 +26,8 @@ export default {
     return {
       symbol: '',
       stock: '',
-      message: ''
+      message: '',
+      userinput: ''
     }
   },
   methods: {
@@ -40,6 +43,14 @@ export default {
         }
 
       })
+    },
+    querySearch(queryString, callback) {
+      tickerService.search(queryString).then((data) => {
+        callback(data);
+      })
+    },
+    handleSelect(item) {
+      this.$router.push({ name: 'StockDetail', params: { ticker: item.value }})
     }
   }
 }

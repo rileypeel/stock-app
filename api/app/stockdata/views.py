@@ -7,14 +7,24 @@ from django.db.models.functions import Trunc
 from django.db.models import F, Avg, DateTimeField
 import pytz
 import datetime
-from core.data.data import update_stock, get_daily_fh
+from core.data.data import update_stock
 from core.models import MinutePrice, DailyPrice, Stock
 from core.data.data import is_intraday
 from stockdata import serializers
+from portfolio.serializers import StockSerializer
+from core.data.finnhub_data import get_data as get_data_fh
+
+
+##testing
+
+from core.data.simfin_data import get_data
 
 
 def parse_datetime(datetime_str):
     """helper fucntion for parsing date and times given in query params"""
+
+    if datetime_str is 'now':
+        return pytz.utc.localize(datetime.datetime.now())
     try:
         timestamp = datetime.datetime.strptime(
             datetime_str, '%Y-%m-%d-%H-%M-%S')
@@ -146,20 +156,46 @@ class Quote(APIView):
 
     def get(self, request, ticker):
         """Get quote for ticker"""
+        #finnhub quote
 
-        try:
-            stock = Stock.objects.get(ticker=ticker)
-        except Stock.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
 
-        update_stock(stock)
+class CompanyInfo(APIView):
+    """Endpoint for company info"""
 
-        try:
-            quote = DailyPrice.objects.filter(stock=stock).latest('time_stamp')
-        except DailyPrice.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+    def get(self, request, ticker):
+        """get info for ticker"""
+        data=get_data(ticker)
+        return Response(status=status.HTTP_200_OK, data=data)
 
-        serializer = serializers.DailyPriceSerializer(quote)
+
+class FinnhubData(APIView):
+    """Endpoint for stock price data"""
+
+    def get(self, request, ticker):
+        """"""
+
+        time_from = request.GET.get('from', '2000-01-01-00-00-00')
+        time_to = request.GET.get('to', 'now')
+        resolution = request.GET.get('resolution', 'D')
+        time_from = parse_datetime(time_from)
+        time_to = parse_datetime(time_to)
+        data = get_data_fh(ticker, time_from, time_to, resolution)
+        serializer = serializers.DataSerializer(data, many=True)
 
         return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+
+class StockSearch(APIView):
+    """Endpoint for searching if a stock exists"""
+
+    def get(self, request, ticker_str):
+        """ """
+        try: 
+            stocks = Stock.objects.filter(ticker__istartswith=ticker_str)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = StockSerializer(stocks, many=True)
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
+
 

@@ -30,6 +30,21 @@ const tickerService = {
   async getQuote(ticker) {
     var quote = await httpService.get('api/stockdata/quote/'.concat(ticker));
     return quote;
+  },
+  async search(search_str) {
+    var result = await httpService.get('api/stockdata/search/'.concat(search_str));
+    var data = [];
+    if(result) {
+      for(var i=0;i<result.length;i++) {
+        data.push({'value': result[i].ticker})
+      }
+    }
+    return data;
+  },
+  async stockInfo(ticker) {
+    var result = await httpService.get('api/stockdata/company-info/'.concat(ticker));
+    console.log(result)
+    return result;
   }
 }
 
