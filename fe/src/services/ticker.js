@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-=======
 // service for fetching/caching ticker data
 
 // constants
 
 // private variables and functions
 import httpService from '../services/http.js';
-
->>>>>>> riley-fe
 
 // service object
 const tickerService = {
