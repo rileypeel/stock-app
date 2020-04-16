@@ -14,7 +14,7 @@
 
 <script>
 import View from '../services/view'
-import Ticker from '../services/faketicker'
+import FakeTicker from '../services/faketicker'
 
 export default {
   name: "Ticker",

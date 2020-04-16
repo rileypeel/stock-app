@@ -1,13 +1,11 @@
-<<<<<<< HEAD
-=======
+
 // service for fetching/caching ticker data
 
 // constants
 
 // private variables and functions
-import httpService from '../services/http.js';
+import httpService from './http.js';
 
->>>>>>> riley-fe
 
 // service object
 const tickerService = {
@@ -48,6 +46,10 @@ const tickerService = {
     var result = await httpService.get('api/stockdata/company-info/'.concat(ticker));
     console.log(result)
     return result;
+  },
+  async stockRecommend(ticker) {
+    var result = await httpService.get('api/stockdata/recommendation-data/'.concat(ticker))
+    return result
   }
 }
 

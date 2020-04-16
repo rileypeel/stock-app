@@ -14,6 +14,7 @@
           </el-row>
         </el-tab-pane>
         <el-tab-pane name="Financials" label="Finanacials">
+          <BarChart :ticker="ticker"></BarChart>
         </el-tab-pane>
         <el-tab-pane name="Research" label="Research">
         </el-tab-pane>
@@ -28,11 +29,13 @@
 
 <script>
 import Navigation from './Navigation.vue';
+import BarChart from './BarChart.vue'
 import tickerService from '../services/ticker.js'
 export default {
   name: "StockDetail",
   components : {
-    Navigation
+    Navigation,
+    BarChart
   },
   data () {
     return {

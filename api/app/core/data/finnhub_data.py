@@ -1,5 +1,5 @@
 import json, requests, datetime, pytz
-from core.data.api_urls import FINNHUB_CANDLE_URL
+from core.data.api_urls import FINNHUB_CANDLE_URL, FINNHUB_ANALYST_URL
 from core.data.api_keys import FINNHUB_KEY
 
 def datetime_to_unix(date_time):
@@ -30,6 +30,21 @@ def get_data_fh(ticker, time_from, time_to, resolution):
     else:
         return None
 
+def get_recommend(ticker):
+	"""get analyst recommendation data from finnhub api"""
+	params = {
+		'symbol': ticker,
+		'token': FINNHUB_KEY,
+	}
+	try:
+		res = requests.get(url=f"{FINNHUB_ANALYST_URL}", params=params)
+	except:
+		return None
+
+	if res.status_code == 200:
+		return res.json()
+	else:
+		return None
 
 def format_data(data):
 	"""Change the format of the candle data to timestamped list of dicts"""

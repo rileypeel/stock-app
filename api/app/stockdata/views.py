@@ -12,7 +12,7 @@ from core.models import MinutePrice, DailyPrice, Stock
 from core.data.data import is_intraday
 from stockdata import serializers
 from portfolio.serializers import StockSerializer
-from core.data.finnhub_data import get_data as get_data_fh
+import core.data.finnhub_data as fh
 
 
 ##testing
@@ -164,7 +164,7 @@ class CompanyInfo(APIView):
 
     def get(self, request, ticker):
         """get info for ticker"""
-        data=get_data(ticker)
+        data = get_data(ticker)
         return Response(status=status.HTTP_200_OK, data=data)
 
 
@@ -179,8 +179,8 @@ class FinnhubData(APIView):
         resolution = request.GET.get('resolution', 'D')
         time_from = parse_datetime(time_from)
         time_to = parse_datetime(time_to)
-        data = get_data_fh(ticker, time_from, time_to, resolution)
-        serializer = serializers.DataSerializer(data, many=True)
+        data = fh.get_daily(ticker, time_from, time_to, resolution)
+        serializer = seializers.DataSerializer(data, many=True)
 
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
@@ -197,5 +197,14 @@ class StockSearch(APIView):
 
         serializer = StockSerializer(stocks, many=True)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+class AnalystRecommendation(APIView):
+
+    def get(self, request, ticker):
+        """Endpoint for analyst reccomendations"""
+        data = fh.get_recommend(ticker)
+        if data is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_200_OK, data=data)
 
 
