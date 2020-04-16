@@ -44,8 +44,11 @@ export default {
 
       })
     },
+
     querySearch(queryString, callback) {
+      console.log("making search call")
       tickerService.search(queryString).then((data) => {
+        console.log(data)
         callback(data);
       })
     },
