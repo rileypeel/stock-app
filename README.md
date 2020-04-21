@@ -1,5 +1,1 @@
-Django API for stock data
-
-Ahoy Friend, 
-
-I'm trying to learn django-rest so I thought a good little project would be to create an api for trading stocks. The idea I have in my head is that you can create an account and in that account you can create portfolios for "paper trading" stocks. Just working on this backend thing right now but would like to slap a nice frontend on it in the future. Anyways, I been struggling a bit with an endpoint for posting transaction objects, specifically if you navigate to /app/portfolio/views.py and check out the post method in the TransactionView class. The idea is that when a user wants to buy or sell then I would send a post request to create a new transaction object, but I also need to check to make sure they have enough money in their account and update the portfolio by adding the stock in the case of a buy and removing in the case of a sell. What I have there is working now for buying, but it doesn't seem like a great way to do it. Anyways if you have any suggestions about anything they would be much appreciated. Stay hard, Riley
+Stock Market Web Application - Django API + Vue Frontend

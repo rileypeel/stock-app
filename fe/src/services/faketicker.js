@@ -16,6 +16,8 @@ function FakeTicker() {
       periodCount: 50,
       offset: 10,
       date: null,
+      exchange: 'NASDAQ',
+      ticker: 'RMP',
       data: {
         past: [],
         current: {
@@ -55,10 +57,14 @@ function FakeTicker() {
       // replace this with getStock call to an API
       var nextIndex = ++index % this.cfg.refreshRate
       this.simulateStock()
+      this.updateEntry()
       if (!nextIndex) {
         this.newEntry()
       }
-      this.updateEntry()
+      var past = this.window.data.past
+      var current = this.window.data.current
+      
+      view.setData(past.concat({ ...current }))
       setTimeout(() => this.runTicker(nextIndex), 1000 / this.cfg.refreshRate)
     },
     newEntry() {
@@ -72,7 +78,7 @@ function FakeTicker() {
 
       past = past.concat({ ...current})
 
-      subscriber && subscriber.setPastData(past)
+      // subscriber && subscriber.setPastData(past)
 
       this.cfg.data.current = {
         hi: current.y,
@@ -86,7 +92,7 @@ function FakeTicker() {
     },
     updateEntry() {
       // update the current entry on the view
-      subscriber && subscriber.setCurrentData(this.cfg.data.current)
+      // subscriber && subscriber.setCurrentData(this.cfg.data.current)
     },
     simulateStock() {
       // simulate a stock object, with a current value (y), high, and low

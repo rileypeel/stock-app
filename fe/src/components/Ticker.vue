@@ -8,7 +8,7 @@
 
 <script>
 import View from '../../services/view/view'
-import Ticker from '../../services/ticker'
+import Ticker from '../../services/faketicker'
 
 import Header from './Header.vue'
 import Options from './Options.vue'
