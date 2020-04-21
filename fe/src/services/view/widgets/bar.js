@@ -1,5 +1,5 @@
 // functions for drawing bars on a chart representing stock hi/lo's 
-function drawBar(data, length, index, view) {
+function draw(data, length, index, view) {
   var canvas = view.canvas
   var max = view.max
   var range = view.range
@@ -16,10 +16,6 @@ function drawBar(data, length, index, view) {
     .attr('height', spreadNormalized)
     .attr('x', c.chartXOffset + ((c.rectCount - (length - index)) * c.rectAndSpacingWidth))
     .attr('y', diffNormalized)
-}
-
-function draw(data, length, index, view) {
-  drawBar(data, length, index, view)
 }
 
 export default draw

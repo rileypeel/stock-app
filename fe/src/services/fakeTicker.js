@@ -10,7 +10,7 @@ function FakeTicker() {
   var stonks = {
     cfg: {
       // per 2 seconds
-      refreshRate: 5,
+      refreshRate: 10,
       min: 0,
       max: 100,
       periodCount: 50,
@@ -84,6 +84,8 @@ function FakeTicker() {
         hi: current.y,
         lo: current.y,
         y: current.y,
+        open: current.y,
+        close: current.y,
         avg: current.y,
         all: [current.y]
       }
@@ -111,6 +113,8 @@ function FakeTicker() {
       data.lo = Math.min(...data.all)
       // get the average
       data.avg = data.all.reduce((a, b) => a + b, 0) / data.all.length
+      // set the new close
+      data.close = newY
       // set Y
       data.y = newY
     },

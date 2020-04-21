@@ -6,6 +6,7 @@ import frame from './widgets/frame'
 //import level from './widgets/level'
 import bar from './widgets/bar'
 import line from './widgets/line'
+import candle from './widgets/candle'
 
 import Cfg from '../cfg'
 
@@ -69,9 +70,11 @@ function View(init = false) {
         .enter()
         .each((d, i) => {
           var length = data.length
-          var offset = length - i
           if (this.cfg.type === cfg.CHART_BAR) {
-            bar(d, length, i, this, offset)
+            bar(d, length, i, this)
+          }
+          if (this.cfg.type === cfg.CHART_CANDLE) {
+            candle(d, length, i, this)
           }
           if (this.cfg.type === cfg.CHART_LINE) {
             if (i + 1 != data.length) {
