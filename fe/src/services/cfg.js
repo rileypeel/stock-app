@@ -25,6 +25,8 @@ function Cfg() {
       rectWidth: 11,
       rectAndSpacingWidth: 12,
       rectCount: 40,
+      candleWidth: 5,
+      candleOffset: 3.5,
     }
   }
 
