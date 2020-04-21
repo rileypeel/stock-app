@@ -1,17 +1,25 @@
 // functions for drawing bars on a chart representing stock hi/lo's 
-function drawBar(data, canvas, offset) {
-  var isPast = offset !== null
+function drawBar(data, length, index, view) {
+  var canvas = view.canvas
+  var max = view.max
+  var range = view.range
+  var c = view.cfg.chart
+  var diff = max - data.hi
+  var diffNormalized = c.chartYOffset + ((diff / range) * c.chartHeight)
+  var spread = data.hi - data.lo
+  var spreadNormalized = (spread / range) * c.chartHeight 
+
   canvas.append('rect')
-    .attr('class', isPast ? 'past' : 'current')
+    .attr('class', 'past')
     .attr('fill', 'green')
-    .attr('width', 11)
-    .attr('height', ((data.hi - data.lo) * 3))
-    .attr('x', 36 + (isPast ? ((40 - offset) * 12) : 480))
-    .attr('y', (data.lo * 3) + 50)
+    .attr('width', c.rectWidth)
+    .attr('height', spreadNormalized)
+    .attr('x', c.chartXOffset + ((c.rectCount - (length - index)) * c.rectAndSpacingWidth))
+    .attr('y', diffNormalized)
 }
 
-function draw(data, canvas, offset = null) {
-  drawBar(data, canvas, offset)
+function draw(data, length, index, view) {
+  drawBar(data, length, index, view)
 }
 
 export default draw

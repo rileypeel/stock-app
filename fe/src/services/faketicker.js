@@ -61,10 +61,10 @@ function FakeTicker() {
       if (!nextIndex) {
         this.newEntry()
       }
-      var past = this.window.data.past
-      var current = this.window.data.current
+      var past = this.cfg.data.past
+      var current = this.cfg.data.current
       
-      view.setData(past.concat({ ...current }))
+      subscriber && subscriber.setData(past.concat({ ...current }))
       setTimeout(() => this.runTicker(nextIndex), 1000 / this.cfg.refreshRate)
     },
     newEntry() {

@@ -1,19 +1,27 @@
 // functions for drawing line graphs
-function drawLine(curr, prev, canvas, offset) {
-  var isPast = offset !== null
-  var x = 36 + (isPast ? ((40 - offset) * 12) : 480)
+function drawLine(curr, prev, length, index, view) {
+  var canvas = view.canvas
+  var max = view.max
+  var range = view.range
+  var c = view.cfg.chart
+
+  var prevDiff = max - prev.avg
+  var prevDiffNormalized = c.chartYOffset + ((prevDiff / range) * c.chartHeight)
+  var currDiff = max - curr.avg
+  var currDiffNormalized = c.chartYOffset + ((currDiff / range) * c.chartHeight)
+
   canvas.append('line')
-    .attr('class', isPast ? 'past' : 'current')
+    .attr('class', 'past')
     .style('stroke', 'green')
     .style('stroke-width', 3)
-    .attr('x1', x + (isPast ? 0 : 12))
-    .attr('y1', ((isPast ? curr.avg : curr.y) * 3) + 50)
-    .attr('x2', x + (isPast? 12 : 0))
-    .attr('y2', (prev.avg * 3) + 50)
+    .attr('x1', c.chartXOffset + ((c.rectCount - (length - index)) * c.rectAndSpacingWidth))
+    .attr('x2', c.chartXOffset + ((c.rectCount - (length - (index - 1))) * c.rectAndSpacingWidth))
+    .attr('y1', prevDiffNormalized)
+    .attr('y2', currDiffNormalized)
 }
 
-function draw(curr, prev, canvas, offset = null) {
-  drawLine(curr, prev, canvas, offset)
+function draw(curr, prev, length, index, view) {
+  drawLine(curr, prev, length, index, view)
 }
 
 export default draw

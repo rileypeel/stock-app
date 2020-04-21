@@ -55,7 +55,7 @@ export default {
       count: cfg.count,
       ticker: cfg.ticker,
       showLine: cfg.showLine,
-      chart: cfg.chart,
+      chart: cfg.type,
     }
   },
   methods: {
@@ -73,7 +73,7 @@ export default {
       this.view.update()
     },
     setChart() {
-      this.cfg.chart = this.chart
+      this.cfg.type = this.chart
       this.view.update()
     },
     setTicker() {
@@ -87,6 +87,7 @@ export default {
 <style>
 .options {
   color: black;
+  float: left;
 }
 
 .option {
