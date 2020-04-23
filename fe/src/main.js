@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import 'element-ui/lib/theme-chalk/reset.css'
+import 'element-ui/lib/theme-chalk/reset.css';
 import App from './App.vue';
 import Login from './components/Login.vue';
 import Home from './components/Home.vue';
@@ -23,7 +23,7 @@ const router = new Router({
   routes: [
     { path: '/', component: Home, meta: { requiresAuth: true } },
     { path: '/login', name: 'Login', component: Login },
-    { path: '/register', component: Register },  
+    { path: '/register', name: 'Register', component: Register },  
     { path: '/stock', name: 'Stock', component: Transaction, meta: { requiresAuth: true } },
     { path: '/user', name: 'User', component: User, meta: { requiresAuth: true } },
     { path: '/portfolio', name: 'Portfolio', component: Portfolio, meta: { requiresAuth: true } },

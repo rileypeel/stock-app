@@ -1,7 +1,7 @@
 <template>
-  <div >
+  <div class="nav" v-if="showNav">
     <el-menu :router="true" id='navbar' :default-active="activeIndex" text-color="white" active-text-color="#ffd04b" background-color="#545c64" class="el-menu container" mode="horizontal" @select="handleSelect">
-      <el-menu-item index="/user">Profile</el-menu-item>
+      <el-menu-item index="/user"><el-image fit="fill" class="img" :src="url"></el-image></el-menu-item>
       <el-menu-item index="/portfolio"><router-link to='/portfolio'>Portfolio</router-link></el-menu-item>
       <el-menu-item index="/stocks">Stocks</el-menu-item>
       <el-menu-item id="logout" @click="logout" index="4">Logout</el-menu-item>
@@ -16,7 +16,14 @@ export default {
   name: "Navigation",
   data () {
     return {
-      activeIndex: '1'
+      activeIndex: '1',
+      url: require('../../public/default-profile.png'),
+      showNav: true
+    }
+  },
+  watch: {
+    $route: function (to) {
+      this.show(to)
     }
   },
   methods: {
@@ -26,8 +33,24 @@ export default {
     logout() {
       userService.logout()
       this.$router.push('Login');
+    },
+    show(route) {
+      if(route.name == 'Login' || route.name == 'Register') {
+        this.showNav = false;
+      } else {
+        this.showNav = true;
+      }
     }
+  },
+  mounted: function() {
+    userService.getProfilePic().then((data) => {
+      if(data) {
+        this.url = data
+      }
+    })
+    this.show(this.$route);
   }
+  
 }
 </script>
 
@@ -37,6 +60,18 @@ export default {
     top: 0;
     width: 100%;
 }
+.nav {
+  font-weight: bold;
+}
+.img {
+  border-radius:50%;
+  height: 40px;
+  width: 40px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: gray;
+}
+
 .container {
   display: flex;
   justify-content: flex-start;

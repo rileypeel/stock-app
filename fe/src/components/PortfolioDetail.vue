@@ -5,7 +5,7 @@
     <router-link to="/transaction"> Buy/Sell</router-link>
     <el-collapse accordion>
       <el-collapse-item title="Portfolio Holdings">
-        <el-table
+        <el-table v-if="noHoldings"
           :data="holdings"
           stripe
           style="width: 100%">
@@ -40,10 +40,13 @@
             width="100">
           </el-table-column>
         </el-table>
+        <p v-else>
+          You currently have no holdings in this portfolio.
+        </p>
           
       </el-collapse-item>
       <el-collapse-item title="Transactions">
-        <el-table
+        <el-table v-if="noTrans"
           :data="transactions"
           stripe
           style="width: 100%"
@@ -82,32 +85,43 @@
             width="180">
           </el-table-column>
         </el-table>
+        <p v-else>
+          No transactions in this portfolio.
+        </p> 
       </el-collapse-item>
-    </el-collapse> 
+    </el-collapse>
+
   </div>  
 </template>
 
 <script>
 import tickerService from '../services/ticker.js'
 import portfolioService from '../services/portfolio.js';
-import Navigation from './Navigation.vue';
+
 export default {
   name: "PortfolioDetail",
   components : {
-    Navigation
+
   },
   data() {
     return {
       portfolioName: this.$route.query.name,
       transactions: [],
       holdings: [],
-      portfolioId: this.$route.params.id
+      portfolioId: this.$route.params.id,
+      noTrans: false,
+      noHoldings: false
     }
   },
   methods: {
     getTransactions() {
       portfolioService.getTransactions(this.portfolioId).then((data) => {
         this.transactions = data;
+        if(this.transactions.length == 0) {
+          this.noTrans = false;
+        } else {
+          this.noTrans = true;
+        }
       })
     },
     getHoldings() {
@@ -115,6 +129,11 @@ export default {
         this.holdings = data;
         this.holdings.forEach((holding) => {
           tickerService.getQuote(holding.stock).then((data) => {
+            if(this.holdings.length == 0) {
+              this.noHoldings = false
+            } else {
+              this.noHoldings = true
+            }
             holding['latestPrice'] = data.close_price
             holding['marketValue'] = holding.number_of_shares*data.close_price;
             holding['percentChange'] = (holding['marketValue'] - holding['average_cost'])/holding['average_cost']*100;

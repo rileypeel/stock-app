@@ -1,16 +1,114 @@
 <template>
   <div class="user">
-   <Navigation/>
-    User
+    <div v-if="loading">
+     loading..
+    </div>
+    <div  v-else>
+      <el-container>
+        <el-header>
+          <h1>Account Details</h1>
+
+        </el-header>
+        <el-main>
+          Date joined: {{user.date_joined}}<br>
+          Email: {{user.email}}<br>
+          <el-button @click="changePassword()" class="top-margin" icon="el-icon-edit">Change Password</el-button>
+        </el-main>
+            <el-aside>
+            <h1>{{user.name}}</h1>
+            <el-image
+              style="width: 100px; height: 100px"
+              :src="url"
+              fit="contain">
+            </el-image>
+
+        <el-upload
+          :file-list="files"
+          action=""
+          name="profile_pic"
+          :show-file-list="false"
+          :http-request="submitPicture"
+          :auto-upload="true"
+        >
+          <el-button icon="el-icon-upload2">Upload new pic</el-button>
+
+        </el-upload>
+        </el-aside>
+      </el-container>
+    </div>
   </div>  
 </template>
 
 <script>
-import Navigation from './Navigation.vue';
+import userService from '../services/user.js'
 export default {
   name: "User",
+  data () {
+    return {
+      url: require('../../public/default-profile.png'),
+      imageDetails: '',
+      user: {},
+      loading: true,
+      files: []
+    }
+  },
   components : {
-    Navigation
+  },
+  methods: {
+    uploadSuccess() {
+      this.$user.go()
+    },
+    submitPicture(file) {
+      console.log('posting pic')
+      userService.postProfilePic(file['file']).then((res) => {
+        console.log(res)
+        this.$router.go()
+      })
+    },
+    changePassword() {
+      this.$prompt('New Password', 'Change Password', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        inputType: 'password'
+      }).then((passwordInput) => {
+        console.log("success")
+        console.log(passwordInput)
+        userService.patchUser({password: passwordInput.value}).then((res) => {
+
+          if(res == 201) {
+            
+            this.$notify({
+              title: 'Success',
+              message: 'You have successfully changed the password',
+              type: 'success',
+              duration: 2000
+            });
+          }
+        })
+      }).catch(() => {
+        console.log("cancel")
+      })
+    }
+  },
+  mounted: function() {
+    userService.getProfilePic().then((data) => {
+      if(data) {
+        this.url = '0.0.0.0:8000'.concat(data['profile_pic'])
+        console.log(this.url)
+        console.log('not defualt')
+        console.log(data['profile_pic'])
+        this.url = data
+      } else {
+        this.url = require('../../public/default-profile.png')
+        console.log('default')
+      }
+    });
+    userService.getUser().then((data) => {
+      console.log(data)
+      this.user = data;
+      this.loading = false;
+      console.log('done loading')
+    })
   }
 }
 </script>
@@ -18,5 +116,9 @@ export default {
 <style>
 .user {
   font-weight: bold;
+}
+
+.top-margin {
+  margin-top: 50px;
 }
 </style>

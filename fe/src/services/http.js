@@ -9,6 +9,7 @@ const api = 'http://localhost:8000/'
 const httpGet = 'GET'
 const httpPost = 'POST'
 const httpDelete = 'DELETE'
+const httpPatch = 'PATCH'
 
 // private variables and functions
 var queryParams = (params) => {
@@ -32,8 +33,11 @@ var addr = (path, params) => {
 var json = (obj) => obj ? JSON.stringify(obj) : ''
 
 //create request header object with auth token
-var header = () => {
-  var header = new Headers({'Content-Type':'application/json'});
+var header = (notFile) => {
+  var header = new Headers()
+  if(notFile) {
+    header = new Headers({'Content-Type':'application/json'});
+  }
   var token = localStorage.getItem('token');
   if(token != null) {
     header.append('Authorization', ''.concat('Token ', token));
@@ -41,9 +45,11 @@ var header = () => {
   return header;
 }
 // create the fetch() body
-var body = (method, data) => ({method, headers:header(), body: json(data)})
+var body = (method, data) => ({method, headers: header(true), body: json(data)})
 
-var getBody = (method) => ({method, headers:header()})
+var fileBody = (method, data) => ({method, headers: header(false), body: data})
+
+var getBody = (method) => ({method, headers: header(true)})
 // service object
 const httpService = {
   // GET request
@@ -57,8 +63,18 @@ const httpService = {
   },
   // POST request
   post: async (path, data) => fetch(addr(path), body(httpPost, data)),
+
+  filePost: async(path, data) => { 
+    fetch(addr(path), fileBody(httpPost, data)) 
+    console.log(addr(path))
+  },
   // DELETE request
   delete: async (path) => fetch(addr(path), body(httpDelete)),
+  
+  patch: async (path, data) => fetch(addr(path), body(httpPatch, data))
+
+  
+
 }
 
 export default httpService

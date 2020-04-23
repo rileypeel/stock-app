@@ -69,13 +69,12 @@
 </template>
 
 <script>
-import Navigation from './Navigation.vue';
+
 import tickerService from '../services/ticker.js';
 import portfolioService from '../services/portfolio.js';
 export default {
   name: "Transaction",
   components: {
-    Navigation
   },
   data () {
     var selectValidate = (rule, value, callback) => {
@@ -203,8 +202,8 @@ export default {
           .then(() => {
             this.convertType()
             portfolioService.newTransaction(this.trans, this.portfolioId)
-            .then((success) => {
-              if(success) {
+            .then((res) => {
+              if(res == 201) {
                 this.$notify({
                 title: 'Success',
                 message: 'You have successfully placed your order',
@@ -213,9 +212,10 @@ export default {
                 });
                 this.$router.push({ name: 'PortfolioDetail', params: { id: this.portfolioId } });
               } else {
+                
                 this.$notify({
                 title: 'Error',
-                message: 'Invalid transaction, you may not have enough funds or shares in your account.',
+                message: res.non_field_errors[0],
                 type: 'error',
                 duration: 2000
               });

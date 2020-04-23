@@ -1,6 +1,6 @@
 <template>
   <div class="stockDetail">
-   <Navigation/>
+   
     <div  v-if="info" >
       <el-tabs v-model="tabName" style="margin: 10px;">
         <el-tab-pane name="Chart" label="Chart" >
@@ -28,13 +28,13 @@
 </template>
 
 <script>
-import Navigation from './Navigation.vue';
+
 import BarChart from './BarChart.vue'
 import tickerService from '../services/ticker.js'
 export default {
   name: "StockDetail",
-  components : {
-    Navigation,
+  components: {
+
     BarChart
   },
   data () {

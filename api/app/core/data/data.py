@@ -6,7 +6,7 @@ import requests
 
 from core.data.api_keys import ALPHA_VANTAGE_KEY, WORLD_TRADING_DATA_KEY, FINNHUB_KEY
 from time import sleep
-from core.data.api_urls import TIME_SERIES_URL, QUOTE_URL, INTRADAY_TIME_SERIES_URL, FINNHUB_CANDLE_URL
+from core.data.api_urls import TIME_SERIES_URL, QUOTE_URL, INTRADAY_TIME_SERIES_URL
 
 
 default_stock_list = ['GE', 'GIS', 'GOOG', 'MSFT', 'AAPL', 'TSLA', 'MMM', 'HD',

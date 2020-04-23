@@ -47,10 +47,10 @@ const portfolioService = {
     // make a new transaction
     var response = await httpService.post('api/portfolio/'.concat(portfolioId, '/transaction'), payload);
     if(response.status == 201) {
-      return true;
-    } else {
-      return false;
+      return 201
     }
+
+    return response.json()
   },
 }
 

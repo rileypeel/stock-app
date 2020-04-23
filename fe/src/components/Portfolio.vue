@@ -57,14 +57,13 @@
 </template>
 
 <script>
-import Navigation from './Navigation.vue';
+
 
 import portfolioService from '../services/portfolio.js';
 
 export default {
   name: "Portfolio",
   components: { 
-    Navigation
   },
   data () {
     return {

@@ -1,7 +1,16 @@
+import uuid
+import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.conf import settings
 
+
+def user_image_file_path(instance, filename):
+    """generate filepath for new recipe image"""
+    ext = filename.split('.')[-1]
+    filename = f'{uuid.uuid4()}.{ext}'
+    print("saving in uploads/user")
+    return os.path.join('uploads/user/', filename)
 
 class UserManager(BaseUserManager):
 
@@ -29,7 +38,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
+    profile_pic = models.ImageField(upload_to=user_image_file_path, null=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    
     objects = UserManager()
     USERNAME_FIELD = 'email'
 
@@ -73,7 +84,7 @@ class Stock(models.Model):
     """Model for stock data"""
     name = models.CharField(max_length=255, blank=True, null=True)
     ticker = models.CharField(max_length=255, unique=True)
-    latest_price_date = models.DateField(blank=True, null=True)
+    exchange = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.ticker

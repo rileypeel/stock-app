@@ -190,7 +190,9 @@ class TransactionView(APIView):
             portfolio.save()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        print(serializer.errors)
+        print(str(Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)))
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TransactionDetailView(APIView):
@@ -225,6 +227,6 @@ class HoldingView(APIView):
 
         holdings = Holding.objects.filter(portfolio=portfolio)
         serializer = serializers.HoldingSerializer(holdings, many=True)
-        return Response(status=status.HTTP_200_OK, data=serializer.data)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 

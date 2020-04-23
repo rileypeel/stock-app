@@ -1,6 +1,6 @@
 <template>
   <div class="stock">
-   <Navigation/>
+   
     <p>Stocks</p>
     <div class="sub-title">Search</div>
     <el-autocomplete
@@ -15,13 +15,10 @@
 </template>
 
 <script>
-import Navigation from './Navigation.vue';
+
 import tickerService from '../services/ticker.js';
 export default {
   name: "Stock",
-  components : {
-    Navigation
-  },
   data () {
     return {
       symbol: '',
