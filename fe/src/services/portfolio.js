@@ -13,8 +13,6 @@ const portfolioService = {
   async getPortfolio(id) {
     // get a portfolio by its id
     var portfolio = await httpService.get('api/portfolio/'.concat(id));
-    console.log(portfolio)
-    console.log("getting portfolio")
     return portfolio;
   },
   async getHoldings(id) {
@@ -26,7 +24,6 @@ const portfolioService = {
   async newPortfolio(payload) {
     // make a new portfolio
    var response = await httpService.post('api/portfolio/', payload);
-   console.log(response.status)
    if(response.status == 201) {
      return true;
    } else {
@@ -49,7 +46,6 @@ const portfolioService = {
     if(response.status == 201) {
       return 201
     }
-
     return response.json()
   },
 }

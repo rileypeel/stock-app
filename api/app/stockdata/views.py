@@ -172,24 +172,26 @@ class FinnhubData(APIView):
     """Endpoint for stock price data"""
 
     def get(self, request, ticker):
-        """"""
-
+        """Get candlestick data from the finnhub api"""
         time_from = request.GET.get('from', '2000-01-01-00-00-00')
         time_to = request.GET.get('to', 'now')
         resolution = request.GET.get('resolution', 'D')
         time_from = parse_datetime(time_from)
         time_to = parse_datetime(time_to)
-        data = fh.get_daily(ticker, time_from, time_to, resolution)
-        serializer = seializers.DataSerializer(data, many=True)
+
+        data = fh.get_data(ticker, time_from, time_to, resolution)
+
+        if len(data) == 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = serializers.DataSerializer(data, many=True)
 
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
 
 class StockSearch(APIView):
     """Endpoint for searching if a stock exists"""
-
     def get(self, request, ticker_str):
-        """ """
+        """ query database for stocks matching given string"""
         try: 
             stocks = Stock.objects.filter(ticker__istartswith=ticker_str)
         except:

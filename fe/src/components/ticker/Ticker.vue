@@ -8,8 +8,7 @@
 
 <script>
 import View from '../../services/view/view'
-import Ticker from '../../services/fakeTicker'
-
+import Ticker from '../../services/realTicker.js'
 import Header from './Header.vue'
 import Options from './Options.vue'
 
@@ -17,14 +16,29 @@ export default {
   name: "Ticker",
   components: {
     Header,
-    Options 
+    Options
+  },
+  data () {
+    return {
+      ticker: ''
+    }
+  },
+  props: {
+    tickerSym: {
+      type: String, 
+      default: 'TSLA'
+    }
   },
   mounted() {
-    var ticker = Ticker()
+    this.ticker = Ticker(this.tickerSym)
     var view = View(true)
-    view.setTicker(ticker)
-    ticker.subscribe(view)
+    view.setTicker(this.ticker)
+    this.ticker.subscribe(view)
   },
+
+  destroyed() {
+    this.ticker.halt()
+  }
 }
 </script>
 

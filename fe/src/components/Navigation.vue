@@ -4,7 +4,6 @@
       <el-menu-item index="/user"><el-image fit="fill" class="img" :src="url"></el-image></el-menu-item>
       <el-menu-item index="/portfolio"><router-link to='/portfolio'>Portfolio</router-link></el-menu-item>
       <el-menu-item index="/stocks">Stocks</el-menu-item>
-      <el-menu-item index="/ticker"><router-link to='/ticker'>Ticker</router-link></el-menu-item>
       <el-menu-item id="logout" @click="logout" index="4">Logout</el-menu-item>
     </el-menu>
   </div>

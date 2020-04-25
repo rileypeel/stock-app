@@ -1,6 +1,5 @@
 <template>
   <div class="portfolioDetail">
-   <Navigation/>
     <h1>{{ portfolioName }}</h1>
     <router-link to="/transaction"> Buy/Sell</router-link>
     <el-collapse accordion>

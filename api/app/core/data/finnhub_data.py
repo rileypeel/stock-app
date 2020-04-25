@@ -84,6 +84,8 @@ def get_recommend(ticker):
 def format_data(data):
 	"""Change the format of the candle data to timestamped list of dicts"""
 	formatted_data = []
+	if data['s'] == 'no_data': 
+		return formatted_data
 	for index in range(len(data['t'])):
 		formatted_data.append({
 			'time_stamp': unix_to_datetime(data['t'][index]),
@@ -101,8 +103,6 @@ def get_data(ticker, *args):
 	"""get data from finnhub api and return"""
 	data = get_data_fh(ticker, *args)
 	return format_data(data)
-
-
 
 def add_stock_list():
 	"""Retrieve list of stocks supported by finnhub api and add them to the db"""

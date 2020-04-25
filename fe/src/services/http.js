@@ -13,12 +13,13 @@ const httpPatch = 'PATCH'
 
 // private variables and functions
 var queryParams = (params) => {
-  const keys = params.keys();
+  const keys = Object.keys(params);
   var queryStr = '?';
-  for(const key of keys) {
-    queryStr = queryStr.concat(key,'=', params[key])
+  for(var key of keys) {
+    queryStr = queryStr.concat(key,'=', params[key], '&')
+
   }
-  return queryStr;
+  return queryStr.slice(0, -1);
 }
 // make a full address from an endpoint path
 var addr = (path, params) => {
@@ -66,7 +67,6 @@ const httpService = {
 
   filePost: async(path, data) => { 
     fetch(addr(path), fileBody(httpPost, data)) 
-    console.log(addr(path))
   },
   // DELETE request
   delete: async (path) => fetch(addr(path), body(httpDelete)),

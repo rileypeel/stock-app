@@ -18,16 +18,11 @@ const tickerService = {
     return ticker; 
   },
   
-  async getDaily(ticker) {
-    var data = await httpService.get('api/stockdata/'.concat(ticker));
-    return data;
+  async getCandleData(ticker, params) {
+    var data = await httpService.get('api/stockdata/fhdata/'.concat(ticker), params)
+    return data
   },
 
-  async getMinute(ticker, params) {
-    var data = await httpService.get('api/stockdata/.'.concat(ticker), params)
-    return data;
-  },
-  
   async getQuote(ticker) {
     var quote = await httpService.get('api/stockdata/quote/'.concat(ticker));
     return quote;
@@ -44,7 +39,7 @@ const tickerService = {
   },
   async stockInfo(ticker) {
     var result = await httpService.get('api/stockdata/company-info/'.concat(ticker));
-    console.log(result)
+    
     return result;
   },
   async stockRecommend(ticker) {

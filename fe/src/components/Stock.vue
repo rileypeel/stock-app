@@ -31,22 +31,16 @@ export default {
     search(symbol) {
       tickerService.getTicker(symbol).then((data) => {
         if(data) {
-          console.log(data)
-          this.stock = data;
+          this.stock = data
           this.$router.push({ name: 'StockDetail', params: { ticker: data.ticker }})
-          
         } else {
           this.message = 'Symbol not found.'
         }
-
       })
     },
-
     querySearch(queryString, callback) {
-      console.log("making search call")
       tickerService.search(queryString).then((data) => {
-        console.log(data)
-        callback(data);
+        callback(data)
       })
     },
     handleSelect(item) {

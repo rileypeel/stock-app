@@ -39,6 +39,7 @@ function View(init = false) {
       if (!data.length) return
       // var past = data.slice(0, data.length - 1)
       var past = this.ticker.getPastData()
+      this.cfg.updateRect(past.length)
       this.calculateRange(past)
       frame(this)
       //var current = data.slice(-1)[0]
@@ -88,8 +89,15 @@ function View(init = false) {
       // TODO(kieran) pass in parameters to specifically update
       frame(this, true)
       this.setPastData(this.ticker.getPastData())
+      
       //this.setCurrentData(this.ticker.getCurrentData())
       this.setStock()
+      if(this.ticker) {
+        this.ticker.cfg.startDate = this.cfg.startDate
+        this.ticker.cfg.period = this.cfg.period
+        this.ticker.loadHistoricalData()
+      }
+
     },
     calculateRange(data) {
       if (!data.length) {

@@ -21,7 +21,6 @@ function drawYAxis(view) {
         .attr('y1', c.chartYOffset + (c.chartHeight - (i * c.chartYQuartile)))
         .attr('x2', !i ? c.viewWidth : i % 2 ? 10 : 20)
         .attr('y2', c.chartYOffset + (c.chartHeight - (i * c.chartYQuartile)))
-
       // draw the left axis labels
       canvas.append('text')
         .attr('class', 'y')

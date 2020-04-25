@@ -1,9 +1,8 @@
 <template>
   <div class="portfolio">
-    <Navigation/>
     <div v-if="loading" class="loading">
     Loading...
-     <el-button @click="updatePortfolios()">click here if page doesn't load</el-button>
+     
     </div>
     <div class="content">
       <h1>Portfolios</h1>

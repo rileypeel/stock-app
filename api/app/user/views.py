@@ -42,14 +42,12 @@ class UploadImageView(APIView):
 
 
     def post(self, request):
-        """add image"""
+        """add user image"""
         user = self.request.user
-        #serializer = ProfilePicSerializer(user, data=request.data)
-        
         serializer = ProfilePicSerializer(user, request.data)
 
         if serializer.is_valid():
             user.profile_pic.delete(save=True)
             serializer.save()
-            return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)

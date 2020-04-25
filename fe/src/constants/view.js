@@ -1,22 +1,42 @@
 // view config constants
 
 // periods the view accepts
-export const PERIOD_MINUTE = 'minute'
+export const PERIOD_MINUTE = '1 minute'
+export const PERIOD_FIVE_MINUTE = '5 minutes'
+export const PERIOD_THIRTY_MINUTE = '30 minutes'
 export const PERIOD_HOURLY = 'hourly'
 export const PERIOD_DAILY = 'daily'
 export const PERIOD_WEEKLY = 'weekly'
 export const PERIOD_MONTHLY = 'monthly'
-export const PERIOD_YEARLY = 'yearly'
+
 
 // enabled periods for the app
 export const PERIODS = [
   PERIOD_MINUTE,
+  PERIOD_FIVE_MINUTE,
+  PERIOD_THIRTY_MINUTE,
   PERIOD_HOURLY,
   PERIOD_DAILY,
   PERIOD_WEEKLY,
-  PERIOD_MONTHLY,
-  PERIOD_YEARLY
+  PERIOD_MONTHLY
 ]
+
+export const RESOLUTIONS = {
+  '1 minute': '1',
+  '5 minutes': '5',
+  '30 minutes': '30',
+  'hourly': '60',
+  'daily': 'D',
+  'weekly': 'W',
+  'monthly': 'M'
+}
+
+export const TIMEOUTS = {
+  '1 minute': '60',
+  '5 minutes': '300',
+  '30 minutes': '1800',
+  'hourly': '3600'
+}
 
 // chart types that can be show
 export const CHART_BAR = 'bar'

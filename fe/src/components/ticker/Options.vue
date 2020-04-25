@@ -1,47 +1,49 @@
 <template>
   <div class="options">
-    <div class="option">
-      <label class="option-label">Period</label>
-      <select class="option-period"
-          v-model="period" @change="setPeriod">
-        <option v-for="p in periods" :key="p" :value="p">{{p}}</option>
-      </select>
-    </div>
-    <div class="option">
-      <label class="option-label">Count</label>
-      <input class="option-count" v-model.number="count"
-          type="number" @change="setCount"/>
-    </div>
-    <div class="option">
-      <label class="option-label">Line</label>
-      <input class="option-show-line" type="checkbox"
-          v-model="showLine" @change="setLine"/>
-    </div>
-    <div class="option">
-      <label class="option-label">Chart</label>
-      <select class="option-chart"
-          v-model="chart" @change="setChart">
-        <option v-for="c in charts" :key="c" :value="c">{{c}}</option>
-      </select>
-    </div>
-    <div class="option">
-      <label class="option-label">Ticker</label>
-      <select class="option-ticker"
-          v-model="ticker" @change="setTicker">
-        <option v-for="t in tickers" :key="t" :value="t">{{t}}</option>
-      </select>
-    </div>
+    <el-row>
+      <el-col :span="8">
+        <DatePicker />
+      </el-col>  
+      <el-col :span="4" >
+        <div class="option">
+          <label class="option-label">Period</label>
+          <select class="option-period"
+              v-model="period" @change="setPeriod">
+            <option v-for="p in periods" :key="p" :value="p">{{p}}</option>
+          </select>
+        </div>
+      </el-col>
+      <el-col :span="4">  
+        <div class="option">
+          <label class="option-label">Line</label>
+          <input class="option-show-line" type="checkbox"
+              v-model="showLine" @change="setLine"/>
+        </div>
+      </el-col>
+      <el-col :span="4">  
+        <div class="option">
+          <label class="option-label">Chart</label>
+          <select class="option-chart"
+              v-model="chart" @change="setChart">
+            <option v-for="c in charts" :key="c" :value="c">{{c}}</option>
+          </select>
+        </div>
+      </el-col>  
+    </el-row>
   </div>
 </template>
 
 <script>
 import { PERIODS, CHARTS, TICKERS } from '../../constants/view'
-
+import DatePicker from './DatePicker.vue'
 import Cfg from '../../services/cfg'
 import View from '../../services/view/view'
 
 export default {
   name: 'Options',
+  components: {
+    DatePicker
+  },
   data() {
     var cfg = Cfg()
     var view = View()
@@ -55,6 +57,7 @@ export default {
       count: cfg.count,
       ticker: cfg.ticker,
       showLine: cfg.showLine,
+      staticOrReal: '',
       chart: cfg.type,
     }
   },
@@ -64,20 +67,12 @@ export default {
       this.cfg.period = this.period
       this.view.update()
     },
-    setCount() {
-      this.cfg.count = this.count
-      this.view.update()
-    },
     setLine() {
       this.cfg.showLine = this.showLine
       this.view.update()
     },
     setChart() {
       this.cfg.type = this.chart
-      this.view.update()
-    },
-    setTicker() {
-      this.cfg.ticker = this.ticker
       this.view.update()
     }
   }

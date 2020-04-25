@@ -59,9 +59,7 @@ export default {
       this.$user.go()
     },
     submitPicture(file) {
-      console.log('posting pic')
-      userService.postProfilePic(file['file']).then((res) => {
-        console.log(res)
+      userService.postProfilePic(file['file']).then(() => {
         this.$router.go()
       })
     },
@@ -71,8 +69,6 @@ export default {
         cancelButtonText: 'Cancel',
         inputType: 'password'
       }).then((passwordInput) => {
-        console.log("success")
-        console.log(passwordInput)
         userService.patchUser({password: passwordInput.value}).then((res) => {
 
           if(res == 201) {
@@ -94,20 +90,15 @@ export default {
     userService.getProfilePic().then((data) => {
       if(data) {
         this.url = '0.0.0.0:8000'.concat(data['profile_pic'])
-        console.log(this.url)
-        console.log('not defualt')
-        console.log(data['profile_pic'])
         this.url = data
       } else {
         this.url = require('../../public/default-profile.png')
-        console.log('default')
       }
     });
     userService.getUser().then((data) => {
-      console.log(data)
       this.user = data;
       this.loading = false;
-      console.log('done loading')
+      
     })
   }
 }

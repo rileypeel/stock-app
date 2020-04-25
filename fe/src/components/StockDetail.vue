@@ -1,22 +1,25 @@
 <template>
   <div class="stockDetail">
-   
-    <div  v-if="info" >
+    <div v-if="info" > 
       <el-tabs v-model="tabName" style="margin: 10px;">
         <el-tab-pane name="Chart" label="Chart" >
-          <h1>{{ $route.params.ticker }}</h1>
-          <h2>Kieran i think the chart would be nice right here :)</h2>
+          <el-row>
+            <el-col :offset="4">
+              <h1>{{ $route.params.ticker }}</h1>
+              <Ticker :tickerSym="$route.params.ticker" ref="chartUnique"/>
+            </el-col>
+          </el-row>
           <el-row>
             <el-col v-for="item in info" :key="item.value" :span="8">
               <p>{{item.indicatorName}}: {{item.value}}</p>
             </el-col>
-        
           </el-row>
         </el-tab-pane>
         <el-tab-pane name="Financials" label="Finanacials">
-          <BarChart :ticker="ticker"></BarChart>
+          COMING SOON....
         </el-tab-pane>
         <el-tab-pane name="Research" label="Research">
+          COMING SOON..........
         </el-tab-pane>
       </el-tabs>  
     </div>
@@ -24,18 +27,16 @@
         loading
       </div>
     </div>
-
 </template>
 
 <script>
-
-import BarChart from './BarChart.vue'
 import tickerService from '../services/ticker.js'
+import Ticker from './ticker/Ticker.vue'
+
 export default {
   name: "StockDetail",
   components: {
-
-    BarChart
+    Ticker
   },
   data () {
     return {
@@ -48,16 +49,14 @@ export default {
   methods: {
     getInfo() {
       tickerService.stockInfo(this.ticker).then((data) => {
-        console.log(data);
         this.info = data;
       })
     }
   },
   mounted: function() {
     this.ticker = this.$route.params.ticker
-    this.getInfo();
+    this.getInfo()
   }
-  
 }
 </script>
 
@@ -65,7 +64,4 @@ export default {
 .stockDetail {
   font-weight: bold;
 }
-
-
-
 </style>

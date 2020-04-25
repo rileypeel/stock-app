@@ -1,6 +1,5 @@
 <template>
   <div class="transaction">  
-    <Navigation/>
     <el-form  label-width="120px" status-icon :rules="rules" :model="trans" ref='transactionForm'>
       <el-row> 
         <el-col :span="10">
@@ -101,8 +100,6 @@ export default {
       callback(new Error("Please enter a number greater than 0."));
     }
     var limitValidate = (rule, value, callback) => {
-      console.log(value)
-      console.log(this.trans.orderType)
       if(this.trans.orderType == 'Limit') {
         if(!value) {
           callback(new Error("Please enter a limit price."));

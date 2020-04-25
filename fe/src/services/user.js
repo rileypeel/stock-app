@@ -8,7 +8,6 @@ import httpService from '../services/http.js';
 const userService = {
   async login(loginDetails) {
     var response = await httpService.post('api/user/token/', loginDetails);
-    console.log(response.status);
     if(response.status == 200) {
       var data = await response.json();
       localStorage.setItem('token', data['token']);
@@ -37,7 +36,6 @@ const userService = {
     var data = new FormData();
     data.append('profile_pic', file);
     var response = await httpService.filePost('api/user/image/', data);
-    console.log('filepost')
     return response
 
   },
