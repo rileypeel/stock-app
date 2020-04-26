@@ -23,6 +23,7 @@ function Ticker(symbol) {
       ticker: symbol,
       startDate: '2020-01-01-0-0-0',
       period: constants.PERIOD_DAILY,
+      realTime: true,
       data: {
         past: [],
         current: {
@@ -64,45 +65,43 @@ function Ticker(symbol) {
       // set the ticker on the view
       subscriber && subscriber.setStock(this.cfg.exchange, this.cfg.ticker)
     },
-
-    loadHistoricalData() {
+    loadHistoricalData() { //RILEY CHANGE THE NAME OF THIS FUNCITON
+      //load historical data into the chart 
       var params = {
         'resolution': constants.RESOLUTIONS[this.cfg.period],
         'from': this.cfg.startDate
       }
-      
       this.cfg.data.past = []
-      
       this.getData(params)
 
       //log last time stamp then make from call after timeout is over and update the data
-      if(this.cfg.period != constants.PERIOD_DAILY && this.cfg.period != constants.PERIOD_MONTHLY && this.cfg.period != constants.PERIOD_YEARLY) {
-        timeout = setTimeout(() => {
-          var params = {
-            'resolution': constants.RESOLUTIONS[this.cfg.period],
-            'from': this.cfg.data.current.timestamp
-          }
-          this.getData(params)
-        }, 1000*constants.TIMEOUTS[this.cfg.period])
-        //add new data 
+      if(this.realTime) {
+        if(this.cfg.period != constants.PERIOD_DAILY && this.cfg.period != constants.PERIOD_MONTHLY && this.cfg.period != constants.PERIOD_YEARLY) {
+          timeout = setTimeout(() => {
+            var params = {
+              'resolution': constants.RESOLUTIONS[this.cfg.period],
+              'from': this.cfg.data.current.timestamp
+            }
+            this.getData(params)
+          }, 1000*constants.TIMEOUTS[this.cfg.period])
+        }
       }
     },
-
     getData(params) {
       //get data from API
       tickerService.getCandleData(this.cfg.ticker, params).then((candleData) => {
         if(candleData) {
-          var past
           for(var d in candleData) {
             this.addData(candleData[d])
-            past = this.cfg.data.past
           }
-          var current = this.cfg.current
+          var past = this.cfg.data.past
+          var current = this.cfg.data.current
           subscriber && subscriber.setData(past.concat({ ...current }))
         } 
       })
     },
     addData(candleData) {
+      //add data to the current entry and update past 
       var past = this.cfg.data.past
       var current = this.cfg.data.current
       var copy = Object.assign({}, current)

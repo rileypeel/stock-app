@@ -1,7 +1,7 @@
 <template>
   <div class="user">
-    <div v-if="loading">
-     loading..
+    <div class="icon" v-if="loading">
+      <i class="el-icon-loading"></i>
     </div>
     <div  v-else>
       <el-container>
@@ -107,9 +107,12 @@ export default {
 <style>
 .user {
   font-weight: bold;
+
 }
 
 .top-margin {
   margin-top: 50px;
 }
+
+
 </style>

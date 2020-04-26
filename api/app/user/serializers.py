@@ -6,7 +6,7 @@ from core.models import User
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializers for the users object"""
-    
+    date_joined = serializers.DateTimeField(format="%Y-%m-%d")
     class Meta:
         model = get_user_model()
         fields = ('email', 'password', 'name', 'date_joined')

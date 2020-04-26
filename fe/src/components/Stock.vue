@@ -11,14 +11,18 @@
       :trigger-on-focus="false"
       @select="handleSelect"
     ></el-autocomplete>
+    <LineChart/>
   </div>  
 </template>
 
 <script>
-
-import tickerService from '../services/ticker.js';
+import LineChart from './LineChart.vue'
+import tickerService from '../services/ticker.js'
 export default {
   name: "Stock",
+  components: {
+    LineChart
+  },
   data () {
     return {
       symbol: '',

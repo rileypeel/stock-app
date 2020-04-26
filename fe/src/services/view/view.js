@@ -38,13 +38,15 @@ function View(init = false) {
     setData(data) {
       if (!data.length) return
       // var past = data.slice(0, data.length - 1)
-      var past = this.ticker.getPastData()
-      this.cfg.updateRect(past.length)
-      this.calculateRange(past)
+      console.log(data)
+      this.cfg.updateRect(data.length)
+      this.calculateRange(data)
       frame(this)
       //var current = data.slice(-1)[0]
       //this.setCurrentData(current)
-      this.setPastData(past)
+      console.log(this.cfg.type)
+      this.setPastData(data)
+      console.log(this.cfg.type)
     },
     /*
     setCurrentData(data) {

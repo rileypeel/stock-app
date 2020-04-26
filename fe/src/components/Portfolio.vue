@@ -1,8 +1,7 @@
 <template>
   <div class="portfolio">
     <div v-if="loading" class="loading">
-    Loading...
-     
+      <i class="el-icon-loading"></i>
     </div>
     <div class="content">
       <h1>Portfolios</h1>
