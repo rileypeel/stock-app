@@ -35,6 +35,7 @@ class UploadImageView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        """Retrieve user image"""
         serializer = ProfilePicSerializer(self.request.user)
         if serializer.data['profile_pic'] is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -42,10 +43,9 @@ class UploadImageView(APIView):
 
 
     def post(self, request):
-        """add user image"""
+        """Post user image"""
         user = self.request.user
         serializer = ProfilePicSerializer(user, request.data)
-
         if serializer.is_valid():
             user.profile_pic.delete(save=True)
             serializer.save()

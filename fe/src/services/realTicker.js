@@ -8,7 +8,7 @@ import * as constants from '../constants/view'
 
 var subscriber
 var timeout
-function Ticker(symbol) {
+function Ticker(symbol, initDay = false) {
 
   var stonks = {
     cfg: {
@@ -21,9 +21,8 @@ function Ticker(symbol) {
       date: null,
       exchange: 'NASDAQ',
       ticker: symbol,
-      startDate: '2020-01-01-0-0-0',
+      startDate: '1577836800',
       period: constants.PERIOD_DAILY,
-      realTime: true,
       data: {
         past: [],
         current: {
@@ -37,11 +36,6 @@ function Ticker(symbol) {
         }
       }
     },
-
-    parseTimestamp(timestamp) {
-      var d = new Date(timestamp);
-      return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`
-    }, 
     getDate() {
       // returns date in "Thu Mar 05 2020 20:28:11" format
       // TODO(kieran) move this into a date service
@@ -65,27 +59,13 @@ function Ticker(symbol) {
       // set the ticker on the view
       subscriber && subscriber.setStock(this.cfg.exchange, this.cfg.ticker)
     },
-    loadHistoricalData() { //RILEY CHANGE THE NAME OF THIS FUNCITON
-      //load historical data into the chart 
+    loadData() { 
       var params = {
         'resolution': constants.RESOLUTIONS[this.cfg.period],
         'from': this.cfg.startDate
       }
       this.cfg.data.past = []
       this.getData(params)
-
-      //log last time stamp then make from call after timeout is over and update the data
-      if(this.realTime) {
-        if(this.cfg.period != constants.PERIOD_DAILY && this.cfg.period != constants.PERIOD_MONTHLY && this.cfg.period != constants.PERIOD_YEARLY) {
-          timeout = setTimeout(() => {
-            var params = {
-              'resolution': constants.RESOLUTIONS[this.cfg.period],
-              'from': this.cfg.data.current.timestamp
-            }
-            this.getData(params)
-          }, 1000*constants.TIMEOUTS[this.cfg.period])
-        }
-      }
     },
     getData(params) {
       //get data from API
@@ -94,14 +74,22 @@ function Ticker(symbol) {
           for(var d in candleData) {
             this.addData(candleData[d])
           }
-          var past = this.cfg.data.past
-          var current = this.cfg.data.current
-          subscriber && subscriber.setData(past.concat({ ...current }))
+          subscriber && subscriber.setData(this.cfg.data.past.concat({ ...this.cfg.data.current }))
         } 
       })
+      if(![constants.PERIOD_DAILY, constants.PERIOD_MONTHLY].includes(this.cfg.period)) {
+        timeout = setTimeout(() => {
+          var params = {
+            'resolution': constants.RESOLUTIONS[this.cfg.period],
+            'from': this.cfg.data.current.timestamp
+          }
+          this.getData(params)
+        }, 1000*constants.TIMEOUTS[this.cfg.period])
+      }
     },
     addData(candleData) {
       //add data to the current entry and update past 
+      if(this.cfg.data.current.timestamp == candleData.time_stamp) return
       var past = this.cfg.data.past
       var current = this.cfg.data.current
       var copy = Object.assign({}, current)
@@ -112,30 +100,29 @@ function Ticker(symbol) {
       current.y = parseFloat(candleData.close_price)
       current.avg = (current.hi + current.lo) / 2
       current.open = parseFloat(candleData.open_price)
-      current.timestamp = this.parseTimestamp(candleData.time_stamp)
+      current.timestamp = candleData.time_stamp
     },
     start() {
       // start the stonks service
       this.refreshDate()
-      this.loadHistoricalData()
-      
-      //this.runTicker()
+      this.loadData()
     },
     halt() {
-      //RILEY remember to clear the timeout
       clearTimeout(timeout)
     },
     subscribe(view) {
       // provide a view to subscribe to the service
-      //
-      // must have { setCurrentData(data), setPastData(data) } methods
       subscriber = view
-      this.refreshDate()
+      //subscriber.update()
+      this.setStock()
+    },
+    init() {
+      this.cfg.startDate = new Date(Date.now() - 24 * 3600 * 1000).getTime() / 1000
+      this.cfg.period = constants.PERIOD_FIVE_MINUTE
     }
   }
-
+  if(initDay) stonks.init()
   stonks.start()
-
   return stonks
 }
 

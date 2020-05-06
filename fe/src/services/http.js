@@ -16,8 +16,7 @@ var queryParams = (params) => {
   const keys = Object.keys(params);
   var queryStr = '?';
   for(var key of keys) {
-    queryStr = queryStr.concat(key,'=', params[key], '&')
-
+    queryStr = `${queryStr}${key}=${params[key]}&`
   }
   return queryStr.slice(0, -1);
 }
@@ -25,7 +24,7 @@ var queryParams = (params) => {
 var addr = (path, params) => {
   var url = `${api}${path}`
   if(params) {
-    url = url.concat(queryParams(params))
+    url = url+ queryParams(params)
   }
   return url;
 }
@@ -56,7 +55,7 @@ const httpService = {
   // GET request
   async get (path, params) { 
     var response = await fetch(addr(path, params), getBody(httpGet));
-    if(response.status == 200) { 
+    if(response.status == 200) {
       var data = await response.json();
       return data;
     }
@@ -72,8 +71,6 @@ const httpService = {
   delete: async (path) => fetch(addr(path), body(httpDelete)),
   
   patch: async (path, data) => fetch(addr(path), body(httpPatch, data))
-
-  
 
 }
 

@@ -6,8 +6,9 @@
 import httpService from '../services/http.js';
 // service object
 const portfolioService = {
+
   async getPortfolios() {
-    var portfolios = await httpService.get('api/portfolio');
+    var portfolios = await httpService.get('api/portfolio/');
     return portfolios;
   },
   async getPortfolio(id) {
@@ -20,7 +21,6 @@ const portfolioService = {
     var holdings = await httpService.get('api/portfolio/'.concat(id, '/holdings'))
     return holdings
   },
-
   async newPortfolio(payload) {
     // make a new portfolio
    var response = await httpService.post('api/portfolio/', payload);
@@ -30,10 +30,9 @@ const portfolioService = {
      return false;
    }
   },
-  async delPortfolio(id) {
-    //delete a portfolio 
-    //TODO
-    console.log(id)
+  async delPortfolio(portfolioId) {
+    var response = await httpService.delete('api/portfolio/'.concat(portfolioId))
+    return response
   },
   async getTransactions(portfolioId) {
     // return a list of transactions for a specific portfolio

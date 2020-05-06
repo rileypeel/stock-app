@@ -6,7 +6,7 @@ from core.models import User
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializers for the users object"""
-    date_joined = serializers.DateTimeField(format="%Y-%m-%d")
+    date_joined = serializers.DateTimeField(format="%Y-%m-%d", required=False)
     class Meta:
         model = get_user_model()
         fields = ('email', 'password', 'name', 'date_joined')
@@ -58,6 +58,3 @@ class ProfilePicSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'profile_pic')
         read_only_fields = ('id',)
-
-
-

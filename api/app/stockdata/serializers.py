@@ -47,8 +47,8 @@ class MinutePriceSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 class DataSerializer(serializers.Serializer):
-    """data"""
-    time_stamp = serializers.DateTimeField()
+    """Serializer for Finnhub API data"""
+    time_stamp = serializers.IntegerField()
     open_price = serializers.DecimalField(max_digits=12, decimal_places=3)
     close_price = serializers.DecimalField(max_digits=12, decimal_places=3)
     high_price = serializers.DecimalField(max_digits=12, decimal_places=3)

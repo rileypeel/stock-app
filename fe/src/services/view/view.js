@@ -1,27 +1,29 @@
 // function for returning a stock ticker view using d3
 import * as d3 from 'd3'
 import * as cfg from '../../constants/view'
-
 import frame from './widgets/frame'
-//import level from './widgets/level'
 import bar from './widgets/bar'
 import line from './widgets/line'
 import candle from './widgets/candle'
-
 import Cfg from '../cfg'
+
+const MAX_RECT_WIDTH = 50
+const MIN_RECT_WIDTH = 1
 
 var obj
 
-function View(init = false) {
+function View(init = false, smallSize = false) {
+  
   obj = obj || {
     ticker: null,
+    smallSize: '',
     quartiles: [0,0,0,0,0],
     min: 0,
     max: 0,
     range: 0,
     canvas: null,
     cfg: Cfg(),
-    // TODO(kieran) add dimensions and programmatically make the view
+
     setTicker(ticker) {
       // add an instance of the ticker to read data from if needed
       this.ticker = ticker
@@ -30,42 +32,22 @@ function View(init = false) {
       // sets the date object in the header
       d3.select('.date').text(date)
     },
-    setStock() {
+    setStock(exchange, ticker) {
       // sets the view ticker
+      this.cfg.exchange = exchange
+      this.cfg.ticker = ticker
       d3.select('.exchange').text(this.cfg.exchange)
       d3.select('.ticker').text(this.cfg.ticker)
     },
     setData(data) {
       if (!data.length) return
-      // var past = data.slice(0, data.length - 1)
-      console.log(data)
-      this.cfg.updateRect(data.length)
+      this.updateChartSize(this.smallSize)
+      this.updateRect(data.length)
+      this.calculateXLabels(data)
       this.calculateRange(data)
-      frame(this)
-      //var current = data.slice(-1)[0]
-      //this.setCurrentData(current)
-      console.log(this.cfg.type)
       this.setPastData(data)
-      console.log(this.cfg.type)
+      frame(this, true)
     },
-    /*
-    setCurrentData(data) {
-      // remove old data and draw the current data
-      this.canvas.selectAll('.current').remove()
-      if (this.cfg.showLine) {
-        level(data, this.canvas)
-      }
-      if (this.cfg.type === cfg.CHART_BAR) {
-        bar(data, this.canvas)
-      }
-      if (this.cfg.type === cfg.CHART_LINE) {
-        var pastData = this.ticker.getPastData()
-        if (pastData.length) {
-          line(data, pastData[pastData.length - 1], this.canvas)
-        }
-      }
-    },
-    */
     setPastData(data) {
       // draw previous data
       this.canvas.selectAll('.past').remove()
@@ -87,26 +69,17 @@ function View(init = false) {
         })
     },
     update() {
-      // update the graph to match settings
-      // TODO(kieran) pass in parameters to specifically update
-      frame(this, true)
-      this.setPastData(this.ticker.getPastData())
-      
-      //this.setCurrentData(this.ticker.getCurrentData())
-      this.setStock()
       if(this.ticker) {
         this.ticker.cfg.startDate = this.cfg.startDate
         this.ticker.cfg.period = this.cfg.period
-        this.ticker.loadHistoricalData()
+        this.ticker.loadData()
       }
-
     },
     calculateRange(data) {
       if (!data.length) {
         this.min = 0
         this.max = 0
         this.range = 0
-
         return [0, 0, 0, 0, 0]
       }
 
@@ -123,15 +96,63 @@ function View(init = false) {
       this.quartiles = [0, quarter, 2*quarter, 3*quarter, 4*quarter]
           .map(q => q + minMax.min)
     },
+    updateChartSize(small) {
+      var chart = this.cfg.chart
+      if(small) {
+        chart.viewWidth = 400
+        chart.viewHeight = 200
+        chart.chartYOffset = 30
+        chart.chartYQuartile = 50
+        chart.chartXQuartile = 60
+        chart.fontSize = '12px'
+      } else {
+        chart.viewWidth = 600
+        chart.viewHeight = 300
+        chart.chartYOffset = 50
+        chart.chartXQuartile = 93
+        chart.chartYQuartile = 75
+        chart.fontSize = '12px'
+      }
+      chart.chartHeight = chart.viewHeight
+      chart.chartWidth = chart.viewWidth - (chart.chartXOffset * 2)
+      //need to update rect
+    },
+    updateRect(dataLength) {
+      var chart = this.cfg.chart
+      chart.rectCount = dataLength
+      chart.rectAndSpacingWidth = chart.chartWidth / chart.rectCount
+      chart.rectWidth = chart.rectAndSpacingWidth - 1
+      if(this.cfg.type != cfg.CHART_LINE) {
+        if(chart.rectWidth < MIN_RECT_WIDTH) {
+          chart.rectWidth = MIN_RECT_WIDTH
+        }
+        if(chart.rectWidth > MAX_RECT_WIDTH) {
+          chart.rectWidth = MAX_RECT_WIDTH
+        }
+      }
+      chart.candleWidth = chart.rectAndSpacingWidth * 5 / 12
+      chart.candleOffset = chart.rectAndSpacingWidth * 7 / 24
+    },
+    calculateXLabels(data) {
+      var numberOfPtsPerQuartile = Math.round(this.cfg.chart.chartXQuartile/(this.cfg.chart.rectAndSpacingWidth))
+      var labels = this.cfg.chart.chartXAxisLabels 
+      var bottomLabels = this.cfg.chart.chartXAxisBottomLabels
+      for(var i = 0; i < 5; i ++) {
+        labels[i] = new Date(data[data.length - 1 - (numberOfPtsPerQuartile * (i + 1))].timestamp * 1000)
+        bottomLabels[i] = labels[i].toTimeString().substr(0,8)
+        labels[i] = `${labels[i].getFullYear()}/${labels[i].getMonth() + 1}/${labels[i].getDate()}`
+        
+      }
+    },
+
     init() {
       // initialize the view and draw the frame
       this.canvas = d3.select('#canvas')
-      frame(this, true)
-      this.setStock()
     }
   }
 
   if (init) {
+    obj.smallSize = smallSize
     obj.init()
   }
 

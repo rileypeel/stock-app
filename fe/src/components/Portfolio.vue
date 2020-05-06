@@ -31,7 +31,7 @@
           </el-table-column>
           <el-table-column
             prop="balance"
-            label="Balance"
+            label="Cash Balance"
             width="180">
           </el-table-column>
           <el-table-column
@@ -55,14 +55,9 @@
 </template>
 
 <script>
-
-
 import portfolioService from '../services/portfolio.js';
-
 export default {
   name: "Portfolio",
-  components: { 
-  },
   data () {
     return {
       portfolios: null,
@@ -99,11 +94,35 @@ export default {
       }).catch((err) => {
         console.log(err)
       })
-      
     },
     deletePortfolio(index) {
-      console.log(index)
-      //todo delete the portfolio
+      this.$confirm('This will permanently delete the portfolio. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      })
+      .then(() => {
+        portfolioService.delPortfolio(this.portfolios[index].id)
+        .then((res) => {
+          if(res.status == 200) {
+            this.$message({
+              type: 'success',
+              message: 'Delete completed',
+              offset: 100
+            })
+            this.$router.go()
+          } else {
+            this.$message({
+              type: 'error',
+              message: 'Delete not completed',
+              offset: 100
+            })
+          }
+        })
+      })
+      .catch(() => {
+        console.log("Delete cancelled")
+      })
     }
   }, 
   mounted: function() {
@@ -117,6 +136,7 @@ export default {
 .portfolio{
   font-weight: bold;
 }
+
 .dialog{
   background-color: rgba(255,255,255,.3);
   border-radius: 20px;

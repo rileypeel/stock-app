@@ -26,20 +26,17 @@ class TransactionSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     "Insufficient account balance.")
         else:
-
             if holding is None:
                 raise serializers.ValidationError(
                     "You are not holding this stock.")
             if holding.number_of_shares < data['number_of_shares']:
                 raise serializers.ValidationError(
                     "You do not have enough shares to sell")
-
         return data
 
 
 class PortfolioSerializer(serializers.ModelSerializer):
     """Serializer for Portfolio objects"""
-    
 
     class Meta:
         model = Portfolio

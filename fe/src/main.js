@@ -24,7 +24,7 @@ Vue.use(ElementUI, { locale })
 
 const router = new Router({
   routes: [
-    { path: '/', component: Home, meta: { requiresAuth: true } },
+    { path: '/', component: Home, name: 'Home', meta: { requiresAuth: true } },
     { path: '/login', name: 'Login', component: Login },
     { path: '/register', name: 'Register', component: Register },  
     { path: '/stock', name: 'Stock', component: Transaction, meta: { requiresAuth: true } },

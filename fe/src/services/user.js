@@ -1,5 +1,5 @@
 // service for handling user auth and information
-
+import {BASE_URL } from '../constants/view.js'
 // constants
 import httpService from '../services/http.js';
 // private variables and functions
@@ -15,7 +15,6 @@ const userService = {
     }
     return false;
   },
-  
   async newUser(userDetails) {
     var response = await httpService.post('api/user/create/', userDetails)
     if(response.status == 201) {
@@ -24,11 +23,10 @@ const userService = {
       return false;
     }
   },
-
   async getProfilePic() {
-    var response = await httpService.get('api/user/image') 
+    var response = await httpService.get('api/user/image/') 
     if(response) {
-      response = 'http://0.0.0.0:8000'.concat(response['profile_pic'])
+      response = BASE_URL + response['profile_pic']
     }
     return response 
   },
@@ -37,11 +35,9 @@ const userService = {
     data.append('profile_pic', file);
     var response = await httpService.filePost('api/user/image/', data);
     return response
-
   },
-
   async getUser() {
-    var response = await httpService.get('api/user/me');
+    var response = await httpService.get('api/user/me/');
     return response
   },
   async patchUser(payload) {
@@ -51,7 +47,6 @@ const userService = {
   async logout() {
     localStorage.removeItem('token');
   }
- 
 }
 
 export default userService 

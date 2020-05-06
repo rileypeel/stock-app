@@ -3,36 +3,32 @@
     <div class="icon" v-if="loading">
       <i class="el-icon-loading"></i>
     </div>
-    <div  v-else>
+    <div v-else>
       <el-container>
         <el-header>
           <h1>Account Details</h1>
-
         </el-header>
         <el-main>
           Date joined: {{user.date_joined}}<br>
           Email: {{user.email}}<br>
           <el-button @click="changePassword()" class="top-margin" icon="el-icon-edit">Change Password</el-button>
         </el-main>
-            <el-aside>
-            <h1>{{user.name}}</h1>
-            <el-image
-              style="width: 100px; height: 100px"
-              :src="url"
-              fit="contain">
-            </el-image>
-
-        <el-upload
-          :file-list="files"
-          action=""
-          name="profile_pic"
-          :show-file-list="false"
-          :http-request="submitPicture"
-          :auto-upload="true"
-        >
-          <el-button icon="el-icon-upload2">Upload new pic</el-button>
-
-        </el-upload>
+        <el-aside>
+          <h1>{{user.name}}</h1>
+          <el-image
+            class="img-square"
+            :src="url"
+            fit="contain">
+          </el-image>
+          <el-upload
+            :file-list="files"
+            action=""
+            name="profile_pic"
+            :show-file-list="false"
+            :http-request="submitPicture"
+            :auto-upload="true">
+            <el-button icon="el-icon-upload2">Upload new pic</el-button>
+          </el-upload>
         </el-aside>
       </el-container>
     </div>
@@ -52,8 +48,6 @@ export default {
       files: []
     }
   },
-  components : {
-  },
   methods: {
     uploadSuccess() {
       this.$user.go()
@@ -70,9 +64,7 @@ export default {
         inputType: 'password'
       }).then((passwordInput) => {
         userService.patchUser({password: passwordInput.value}).then((res) => {
-
           if(res == 201) {
-            
             this.$notify({
               title: 'Success',
               message: 'You have successfully changed the password',
@@ -82,7 +74,7 @@ export default {
           }
         })
       }).catch(() => {
-        console.log("cancel")
+        console.log("User cancelled")
       })
     }
   },
@@ -98,7 +90,6 @@ export default {
     userService.getUser().then((data) => {
       this.user = data;
       this.loading = false;
-      
     })
   }
 }
@@ -107,12 +98,14 @@ export default {
 <style>
 .user {
   font-weight: bold;
-
 }
 
 .top-margin {
   margin-top: 50px;
 }
 
-
+.img-square {
+  width: 100px;
+  height: 100px;
+}
 </style>

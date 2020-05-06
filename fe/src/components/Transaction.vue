@@ -1,6 +1,7 @@
 <template>
-  <div class="transaction">  
-    <el-form  label-width="120px" status-icon :rules="rules" :model="trans" ref='transactionForm'>
+  <div class="transaction">
+    <h1>Buy or Sell shares</h1>  
+    <el-form  class="grey-border form" label-width="120px" status-icon :rules="rules" :model="trans" ref='transactionForm'>
       <el-row> 
         <el-col :span="10">
           <el-form-item label="Buy or Sell" prop="is_buy">
@@ -11,32 +12,41 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item prop="portfolioId">
-        <el-select v-model="portfolioId" placeholder="Select">
-          <el-option
-            v-for="portfolio in portfolios"
-            :key="portfolio.id"
-            :label="portfolio.name"
-            :value="portfolio.id">
-          </el-option>
-        </el-select>
-      </el-form-item>
-    <el-row>
-      <el-col :span="10">
-          <el-form-item prop="ticker" label="Stock Symbol">
-            <el-input  v-model="trans.ticker"></el-input>
+      <el-row>
+        <el-col :span="10">
+          <el-form-item prop="portfolioId">
+            <el-select v-model="portfolioId" placeholder="Select a portfolio">
+              <el-option
+                v-for="portfolio in portfolios"
+                :key="portfolio.id"
+                :label="portfolio.name"
+                :value="portfolio.id">
+              </el-option>
+            </el-select>
           </el-form-item>
-          <el-button @click="getQuote()">Get Quote</el-button> 
+        </el-col>
+      </el-row>
+    <el-row>
+      <el-col :span="14">
+        <el-row>
+          <el-col :span="16">
+            <el-form-item prop="ticker" label="Stock Symbol">
+              <el-input  v-model="trans.ticker"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-button @click="getQuote()">Get Quote</el-button> 
+          </el-col>
+        </el-row>  
       </el-col>  
       <el-col :span="10">
         <div >
           <div v-if="loadingQuote">
             <i class="el-icon-loading"></i>
           </div>
-          <div v-if="showQuote" class="quote">
+          <div v-if="showQuote" class="grey-border">
             <el-row><p> {{ quoteSym }}</p></el-row>
-            <el-row><p>Last price: {{ quote.close_price }}</p></el-row>
-            <el-row><p>Today's volume: {{ quote.volume }}</p></el-row>
+            <el-row><p>Last price: {{ quote.c }}</p></el-row>
           </div>
           <div v-if="quoteErr">
             <p>Stock symbol not found.</p>
@@ -44,11 +54,15 @@
         </div>
       </el-col>
     </el-row>
-      <el-form-item prop="number_of_shares" label="# of shares">
-        <el-input v-model="trans.number_of_shares"></el-input>
-      </el-form-item>
-      <el-row> 
-        <el-col :span="10">
+    <el-row>
+      <el-col :span="10">
+        <el-form-item prop="number_of_shares" label="# of shares">
+          <el-input  v-model="trans.number_of_shares"></el-input>
+        </el-form-item>
+      </el-col>
+    </el-row>
+      <el-row>
+        <el-col :span="10" >
           <el-form-item label="Order Type" prop="order_type">
             <el-radio-group v-model="trans.order_type" @input="limitForm" size="medium">
               <el-radio border label="Market"></el-radio>
@@ -68,7 +82,6 @@
 </template>
 
 <script>
-
 import tickerService from '../services/ticker.js';
 import portfolioService from '../services/portfolio.js';
 export default {
@@ -110,7 +123,7 @@ export default {
     return {
       portfolios: '',
       trans: {
-        number_of_shares: 10,
+        number_of_shares: '',
         price: '',
         ticker: '',
         is_buy: '',
@@ -209,14 +222,13 @@ export default {
                 });
                 this.$router.push({ name: 'PortfolioDetail', params: { id: this.portfolioId } });
               } else {
-                
+                var message = res.non_field_errors.length > 0 ? res.non_field_errors[0] : "Error"
                 this.$notify({
                 title: 'Error',
-                message: res.non_field_errors[0],
+                message: message,
                 type: 'error',
                 duration: 2000
               });
-              //this.$refs['transactionForm'].resetFields();
               }
             });
           }).catch(() => {
@@ -247,11 +259,24 @@ export default {
 .transaction {
   font-weight: bold;
 }
-.quote { 
+
+.left {
+  justify-content: flex-start;
+}
+
+.grey-border { 
   border-style: solid;
   border-width: 1px;
   border-color: grey;
   border-radius: 5px;
+}
+
+.form{
+  margin-top: 50px;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-top: 25px;
+  padding-bottom: 25px;
 }
 
 </style>
