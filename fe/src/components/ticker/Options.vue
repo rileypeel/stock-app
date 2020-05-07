@@ -4,14 +4,12 @@
       <el-col :span="12">
         <DatePeriodSelect/>
       </el-col>
-      
       <el-col class="option-chart" :span="10">
         <p class="option-label">Chart Type</p>
         <el-select
             v-model="chart" @change="setChart">
             <el-option v-for="c in charts" :key="c" :value="c">{{c}}</el-option>
-          </el-select>
-          
+          </el-select> 
         </el-col>
     </el-row>
   </div>
