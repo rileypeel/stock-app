@@ -1,16 +1,18 @@
 <template>
   <div class="options">
-    <el-row class="option"> 
-      <label class="option-label">Line</label>
-      <el-checkbox  class="option-show-line" type="checkbox"
-        v-model="showLine" @change="setLine"></el-checkbox>    
-    </el-row>
     <el-row class="option">
-      <label class="option-label">Chart</label>
-      <el-select class="option-chart"
-        v-model="chart" @change="setChart">
-        <el-option v-for="c in charts" :key="c" :value="c">{{c}}</el-option>
-      </el-select>
+      <el-col :span="12">
+        <DatePeriodSelect/>
+      </el-col>
+      
+      <el-col class="option-chart" :span="10">
+        <p class="option-label">Chart Type</p>
+        <el-select
+            v-model="chart" @change="setChart">
+            <el-option v-for="c in charts" :key="c" :value="c">{{c}}</el-option>
+          </el-select>
+          
+        </el-col>
     </el-row>
   </div>
 </template>
@@ -19,9 +21,13 @@
 import { CHARTS } from '../../constants/view'
 import Cfg from '../../services/cfg'
 import View from '../../services/view/view'
+import DatePeriodSelect from './DatePeriodSelect.vue'
 
 export default {
   name: 'Options',
+  components: {
+    DatePeriodSelect
+  },
   data() {
     var cfg = Cfg()
     var view = View()
@@ -59,10 +65,15 @@ export default {
 
 .option-label {
   font-weight: bold;
-  display: inline-block;
-  margin-right: 5px;
+  position: absolute;
+  top: -25px;
+  left: 85px;
 }
 
+.option-chart {
+  position: relative;
+  margin-top: 10px;
+}
 .option-count {
   width: 40px;
 }

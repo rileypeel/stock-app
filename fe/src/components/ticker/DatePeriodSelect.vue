@@ -2,8 +2,7 @@
   <div class="slider">
     <div class="block">
       <el-row class="selector">  
-          <el-col class="col" :span="24">    
-            NEW time selector kieran :)
+          <el-col class="col" :span="11">    
             <el-select class="select" v-model="selectedTimeFrame" @change="changeSelectOptions()" placeholder="Time window">
               <el-option
                 v-for="(tf, key) in timeframes"
@@ -13,6 +12,8 @@
                 width="20">
               </el-option>
             </el-select>
+          </el-col>
+          <el-col :span="11">
             <el-select class="select" v-model="selectedPeriod" @change="changeView()" placeholder="Frequency">
               <el-option
                 v-for="period in tfMap"
@@ -69,12 +70,10 @@ export default {
 
 <style>
 .col {
-  margin: 0;
+  margin-right: 5px;
 }
 
-.select {
-  width: 100%;
-}
+
 
 .selector {
   margin: 10px;

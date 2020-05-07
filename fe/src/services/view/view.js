@@ -69,7 +69,7 @@ function View(init = false, smallSize = false) {
         })
     },
     update() {
-      if(this.ticker) {
+      if (this.ticker) {
         this.ticker.cfg.startDate = this.cfg.startDate
         this.ticker.cfg.period = this.cfg.period
         this.ticker.loadData()
@@ -98,7 +98,7 @@ function View(init = false, smallSize = false) {
     },
     updateChartSize(small) {
       var chart = this.cfg.chart
-      if(small) {
+      if (small) {
         chart.viewWidth = 400
         chart.viewHeight = 200
         chart.chartYOffset = 30
@@ -122,11 +122,11 @@ function View(init = false, smallSize = false) {
       chart.rectCount = dataLength
       chart.rectAndSpacingWidth = chart.chartWidth / chart.rectCount
       chart.rectWidth = chart.rectAndSpacingWidth - 1
-      if(this.cfg.type != cfg.CHART_LINE) {
-        if(chart.rectWidth < MIN_RECT_WIDTH) {
+      if (this.cfg.type != cfg.CHART_LINE) {
+        if (chart.rectWidth < MIN_RECT_WIDTH) {
           chart.rectWidth = MIN_RECT_WIDTH
         }
-        if(chart.rectWidth > MAX_RECT_WIDTH) {
+        if (chart.rectWidth > MAX_RECT_WIDTH) {
           chart.rectWidth = MAX_RECT_WIDTH
         }
       }
@@ -137,7 +137,7 @@ function View(init = false, smallSize = false) {
       var numberOfPtsPerQuartile = Math.round(this.cfg.chart.chartXQuartile/(this.cfg.chart.rectAndSpacingWidth))
       var labels = this.cfg.chart.chartXAxisLabels 
       var bottomLabels = this.cfg.chart.chartXAxisBottomLabels
-      for(var i = 0; i < 5; i ++) {
+      for (var i = 0; i < 5; i ++) {
         labels[i] = new Date(data[data.length - 1 - (numberOfPtsPerQuartile * (i + 1))].timestamp * 1000)
         bottomLabels[i] = labels[i].toTimeString().substr(0,8)
         labels[i] = `${labels[i].getFullYear()}/${labels[i].getMonth() + 1}/${labels[i].getDate()}`

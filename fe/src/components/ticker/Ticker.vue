@@ -1,12 +1,7 @@
 <template>
   <div id="view">
     <el-row v-if="showOptions">
-      <el-col :span="6">
-        <DatePeriodSelect/>
-      </el-col>
-      <el-col :span="6">
-        <Options/>
-      </el-col>
+      <Options/>
     </el-row>
     <el-row>
       <Header :small="small" />
@@ -20,14 +15,12 @@ import View from '../../services/view/view'
 import Ticker from '../../services/realTicker.js'
 import Header from './Header.vue'
 import Options from './Options.vue'
-import DatePeriodSelect from './DatePeriodSelect.vue'
 
 export default {
   name: "Ticker",
   components: {
     Header,
-    Options,
-    DatePeriodSelect
+    Options
   },
   data () {
     return {
