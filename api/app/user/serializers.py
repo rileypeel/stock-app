@@ -1,15 +1,17 @@
 from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
+from core.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializers for the users object"""
-
+    date_joined = serializers.DateTimeField(format="%Y-%m-%d", required=False)
     class Meta:
         model = get_user_model()
-        fields = ('email', 'password', 'name')
+        fields = ('email', 'password', 'name', 'date_joined')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
+        read_only_fields = ('date_joined',)
 
     def create(self, validated_data):
         """Create a new user with an encrypted password and return it"""
@@ -49,3 +51,10 @@ class AuthTokenSerializer(serializers.Serializer):
             raise serializers.ValidationError(msg, code='authentication')
         attrs['user'] = user
         return attrs
+
+class ProfilePicSerializer(serializers.ModelSerializer):
+    """Serializer for uploading profile picture"""
+    class Meta:
+        model = User
+        fields = ('id', 'profile_pic')
+        read_only_fields = ('id',)

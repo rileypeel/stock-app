@@ -1,12 +1,17 @@
 <template>
   <div class="app">
+    <Navigation />
     <router-view/>
   </div>
 </template>
 
 <script>
+import Navigation from './components/Navigation.vue'
 export default {
   name: 'App',
+  components: {
+    Navigation
+  }
 }
 </script>
 
@@ -19,6 +24,7 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+
 button, 
 input, 
 select, 
@@ -28,10 +34,12 @@ textarea {
   line-height: inherit;
   color: inherit;
 }
+
 * {
   margin: 0;
   padding: 0;
 }
+
 .button{
   border-radius:30px;
   background-color:rgba(37,33,83,.6);

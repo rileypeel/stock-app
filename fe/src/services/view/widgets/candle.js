@@ -82,9 +82,6 @@ function draw(data, length, index, view) {
     .attr('x2', c.chartXOffset + (c.rectAndSpacingWidth / 2) + ((c.rectCount - (length - index)) * c.rectAndSpacingWidth))
     .attr('y2', innerDiffNormalized + innerSpreadNormalized)
     .attr('y1', lowerNormalized)
-
-
-
 }
 
 export default draw

@@ -1,6 +1,8 @@
+
 import Vue from 'vue'
 import Router from 'vue-router'
 import ElementUI from 'element-ui'
+import locale from 'element-ui/lib/locale/lang/en'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'element-ui/lib/theme-chalk/reset.css'
 import App from './App.vue'
@@ -18,13 +20,13 @@ import Ticker from './components/ticker/Ticker.vue'
 
 Vue.config.productionTip = false
 Vue.use(Router)
-Vue.use(ElementUI)
+Vue.use(ElementUI, { locale })
 
 const router = new Router({
   routes: [
-    { path: '/', component: Home, meta: { requiresAuth: true } },
+    { path: '/', component: Home, name: 'Home', meta: { requiresAuth: true } },
     { path: '/login', name: 'Login', component: Login },
-    { path: '/register', component: Register },  
+    { path: '/register', name: 'Register', component: Register },  
     { path: '/stock', name: 'Stock', component: Transaction, meta: { requiresAuth: true } },
     { path: '/user', name: 'User', component: User, meta: { requiresAuth: true } },
     { path: '/portfolio', name: 'Portfolio', component: Portfolio, meta: { requiresAuth: true } },

@@ -6,7 +6,7 @@ import requests
 
 from core.data.api_keys import ALPHA_VANTAGE_KEY, WORLD_TRADING_DATA_KEY, FINNHUB_KEY
 from time import sleep
-from core.data.api_urls import TIME_SERIES_URL, QUOTE_URL, INTRADAY_TIME_SERIES_URL, FINNHUB_CANDLE_URL
+from core.data.api_urls import TIME_SERIES_URL, QUOTE_URL, INTRADAY_TIME_SERIES_URL
 
 
 default_stock_list = ['GE', 'GIS', 'GOOG', 'MSFT', 'AAPL', 'TSLA', 'MMM', 'HD',
@@ -28,18 +28,15 @@ def is_intraday(stock):
         return True
     return False
 
-
 def get_datetime(date):
     """helper function which takes a date as a string and returns a non naive datetime"""
     timestamp = datetime.datetime.strptime(date, '%Y-%m-%d')
     return pytz.utc.localize(timestamp)
 
-
 def get_intraday_datetime(date):
     """helper function which takes a date as a string and returns a non naive datetime"""
     timestamp = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
     return pytz.utc.localize(timestamp)
-
 
 def is_full(date):
     """helper function checks if you need to call api with full or compact param"""
@@ -49,7 +46,6 @@ def is_full(date):
             return False
     return True
 
-
 def is_full_intra(last_time):
     """Helper function checks if you need to call api with full of compact param"""
     if last_time:
@@ -57,7 +53,6 @@ def is_full_intra(last_time):
         if (delta.seconds/60) < 100:
             return False
     return True
-
 
 def get_intraday(ticker, all_data, interval):
     """Get intraday data from alphavantage"""
@@ -76,7 +71,6 @@ def get_intraday(ticker, all_data, interval):
         print(f"Error retrieving intraday data for {ticker}")
         return None
 
-
 def get_quote(ticker):
     """Get stock quote from alphavantage"""
     try:
@@ -90,7 +84,6 @@ def get_quote(ticker):
         return json.loads(res.text)
     else:
         return None
-
 
 def get_fundamentals(ticker):
     """Given a ticker make an API call to get the companies name and fundamental info"""
@@ -118,7 +111,6 @@ def get_daily_alpha(ticker, all_data):
 
 def add_stock_to_db(ticker):
     """Add stock to db if it does not already exist"""
-
     try:
         Stock.objects.get(ticker=ticker)
         print(f"{ticker} already exists in db.")
@@ -131,10 +123,8 @@ def add_stock_to_db(ticker):
             add_intraday_data(stock)
             sleep(15)
 
-
 def update_daily_price(stock, timestamp, data):
     """Update an instance of DailyPrice"""
-
     try:
         daily_price = DailyPrice.objects.get(stock=stock, time_stamp=timestamp)
     except:
@@ -147,10 +137,8 @@ def update_daily_price(stock, timestamp, data):
     daily_price.volume = data['6. volume']
     daily_price.save()
 
-
 def add_daily_price(stock, timestamp, data):
     """Add a daily price object to the db"""
-
     # TODO use serializer instead of doing manually
     if data is not None:
         DailyPrice.objects.create(
@@ -162,7 +150,6 @@ def add_daily_price(stock, timestamp, data):
             low_price=float(data['3. low']),
             volume=int(data['6. volume'])
         )
-
 
 def add_minute_price(stock, timestamp, data):
     """Add intraday minute price data"""
@@ -178,7 +165,6 @@ def add_minute_price(stock, timestamp, data):
             low_price=float(data['3. low']),
             volume=int(data['5. volume'])
         )
-
 
 def add_daily_data(stock, last_date=None):
     """Add DailyPrice objects for given stock up to the last date stored in the db. 
@@ -206,7 +192,6 @@ def add_daily_data(stock, last_date=None):
     else:
         print(f"Daily price data for {stock} is up to date.")
 
-
 def add_intraday_data(stock, last_time=None):
     """Add MinutePrice objects for given stock up to the last date stored in the db. 
     If last_date is none then all the data available will be stored in db.
@@ -230,7 +215,6 @@ def add_intraday_data(stock, last_time=None):
     else:
         print(f"Intraday price data for {stock} is up to date.")
 
-
 def add_stocks(ticker, default):
     """Add stocks to database, price history will be added automatically"""
     if ticker:
@@ -240,7 +224,6 @@ def add_stocks(ticker, default):
     if default:
         for t in default_stock_list:
             add_stock_to_db(t)
-
 
 def update_prices():
     """Update the latest price data for every stock in database"""
@@ -255,7 +238,6 @@ def update_prices():
                 stock=s).latest('time_stamp')
             add_intraday_data(s, last_time=latest_intra_price.time_stamp)
            # sleep(15)
-
 
 def update_stock(stock):
     """Update the latest price data for given ticker"""

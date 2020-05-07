@@ -1,16 +1,13 @@
-from rest_framework.decorators import action
-from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-from rest_framework import viewsets, mixins, status
+from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from core.models import Stock, Portfolio, Holding, Transaction, DailyPrice
 from portfolio import serializers
 from core.data.data import update_stock
-
-# maybe update holdings and portfolio helper functions
-
+from core.data import finnhub_data as fh
+from decimal import Decimal
 
 class ListStocks(APIView):
     """View for retrieving all stocks"""
@@ -63,12 +60,12 @@ class PortfolioView(APIView):
     def get(self, request):
         """return portfolios assigned to user"""
         print("hit endpoint")
+        print(request)
         portfolios = Portfolio.objects.filter(
             user=self.request.user).distinct()
         serializer = serializers.PortfolioSerializer(portfolios, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
         
-
     def post(self, request):
         """Create a new portfolio"""
         serializer = serializers.PortfolioSerializer(data=request.data)
@@ -112,6 +109,14 @@ class PortfolioDetailView(APIView):
             return Response(status=status.HTTP_200_OK, data=serializer.data)
         return Response(status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, id):
+        """Delete a portfolio"""
+        try:
+            portfolio = Portfolio.objects.get(id=id)
+        except Portfolio.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        portfolio.delete()
+        return Response(status=status.HTTP_200_OK)
 
 class TransactionView(APIView):
     """View for retrieving and posting transactions"""
@@ -134,7 +139,6 @@ class TransactionView(APIView):
 
     def post(self, request, id):
         """Allow a user to post transactions aka buy or sell a stock"""
-
         try:
             portfolio = Portfolio.objects.get(id=id)
         except Portfolio.DoesNotExist:
@@ -153,14 +157,11 @@ class TransactionView(APIView):
             holding = None
         
         if request.data['order_type'] == 'Market':
-            #update_stock(stock)
-            ##add try except
-            request.data['price'] = 1#DailyPrice.objects.filter(stock=stock).latest('time_stamp').close_price
+            request.data['price'] = Decimal(fh.get_fh_quote(stock.ticker)['c']).quantize(Decimal('0.01'))
 
         context = {'portfolio': portfolio, 'stock': stock, 'holding': holding}
         serializer = serializers.TransactionSerializer(
             data=request.data, context=context)
-        print(request.data)
 
         if serializer.is_valid():
             num_shares = int(request.data['number_of_shares'])
@@ -171,11 +172,13 @@ class TransactionView(APIView):
                     Holding.objects.create(
                         portfolio=portfolio,
                         stock=stock,
-                        number_of_shares=num_shares
+                        number_of_shares=num_shares,
+                        average_cost=price
                     )
                 else:
                     holding.number_of_shares = int(
                         holding.number_of_shares)+num_shares
+                    holding.average_cost = holding.average_cost + Decimal(price)
                     holding.save()
                 portfolio.balance = float(portfolio.balance)-price
             else:
@@ -184,13 +187,15 @@ class TransactionView(APIView):
                 else:
                     holding.number_of_shares = int(
                         holding.number_of_shares)-num_shares
+                    print(num_shares)
+                    print(holding.average_cost)
+                    holding.average_cost -= request.data['price'] * num_shares
                     holding.save()
                 portfolio.balance = float(portfolio.balance)+price
             serializer.save(stock=stock, portfolio=portfolio)
             portfolio.save()
-
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TransactionDetailView(APIView):
@@ -225,6 +230,6 @@ class HoldingView(APIView):
 
         holdings = Holding.objects.filter(portfolio=portfolio)
         serializer = serializers.HoldingSerializer(holdings, many=True)
-        return Response(status=status.HTTP_200_OK, data=serializer.data)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 

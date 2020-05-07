@@ -3,11 +3,11 @@ version: "3.7"
 services:
   app:
     build:
-      context: .
+      context: ./api
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app
+      - ./api/app:/app
     command: sh -c "python manage.py wait_for_db && python manage.py migrate && python manage.py runserver 0.0.0.0:8000" 
     environment: 
       - DB_HOST=db
@@ -22,4 +22,11 @@ services:
       - POSTGRES_DB=app
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=supersecretpassword
-      
+  fe:
+    build:
+      context: ./fe
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./fe:/fe
+    command: sh -c "npm run serve"
