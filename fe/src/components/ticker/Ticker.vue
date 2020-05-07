@@ -1,18 +1,16 @@
 <template>
   <div id="view">
-    <div v-if="showOptions">
-      <DatePeriodSelect/>
-    </div>
+    <el-row v-if="showOptions">
+      <el-col :span="6">
+        <DatePeriodSelect/>
+      </el-col>
+      <el-col :span="6">
+        <Options/>
+      </el-col>
+    </el-row>
     <el-row>
-      <el-col :span="18">
-        <Header :small="small" />
-        <svg v-bind:class="classObject" id="canvas"></svg>
-      </el-col>
-      <el-col :span="4" >
-        <div v-if="showOptions">
-          <Options/>
-        </div>
-      </el-col>
+      <Header :small="small" />
+      <svg v-bind:class="classObject" id="canvas"></svg>
     </el-row>
   </div>
 </template>

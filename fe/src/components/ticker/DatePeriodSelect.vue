@@ -2,12 +2,20 @@
   <div class="slider">
     <div class="block">
       <el-row class="selector">  
-        <div v-for="(item, key, index) in timeframes" :key="key">
-          <el-col class="col" :span="4">    
-            {{ item }}
-            <el-select class="select" v-model="selectedPeriod[index]" @change="changeView(key, index)" :placeholder="item">
+          <el-col class="col" :span="24">    
+            NEW time selector kieran :)
+            <el-select class="select" v-model="selectedTimeFrame" @change="changeSelectOptions()" placeholder="Time window">
               <el-option
-                v-for="period in tfMap[key]"
+                v-for="(tf, key) in timeframes"
+                :key="tf"
+                :label="tf"
+                :value="key"
+                width="20">
+              </el-option>
+            </el-select>
+            <el-select class="select" v-model="selectedPeriod" @change="changeView()" placeholder="Frequency">
+              <el-option
+                v-for="period in tfMap"
                 :key="period"
                 :label="period"
                 :value="period"
@@ -15,7 +23,6 @@
               </el-option>
             </el-select>
           </el-col>
-        </div>
       </el-row>
     </div>
   </div>
@@ -35,26 +42,26 @@ export default {
     return {
       cfg,
       view,
+      selectedTimeFrame: '',
       periods: PERIODS,
       timeframes: TIMEFRAMES,
-      tfMap: TIMEFRAME_PERIOD_MAP,
-      selectedPeriod: []
+      tfMap: [],
+      selectedPeriod: ''
     }
   },
   methods: {
-    changeView(key, index) {
-      for(var i = 0; i < this.selectedPeriod.length; i++) {
-        if(i != index) {
-          this.selectedPeriod[i] = null;
-        }
-      }
-      this.cfg.period = this.selectedPeriod[index]
-      if(key == MAX) {
+    changeView() {
+      this.cfg.period = this.selectedPeriod
+      if(this.selectedTimeFrame == MAX) {
         this.cfg.startDate = 0
       } else {
-        this.cfg.startDate = timeService.getStartDate(key)
+        this.cfg.startDate = timeService.getStartDate(this.selectedTimeFrame)
       }
       this.view.update()
+    },
+    changeSelectOptions() {
+      this.tfMap = TIMEFRAME_PERIOD_MAP[this.selectedTimeFrame]
+      this.selectedPeriod = ''
     }
   }
 }
