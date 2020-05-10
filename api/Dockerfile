@@ -1,6 +1,8 @@
 FROM python:3.8-alpine
 MAINTAINER Riley Peel
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV DEBUG 0
 
 COPY ./requirements.txt /requirements.txt
 RUN apk add --update --no-cache postgresql-client jpeg-dev
@@ -22,3 +24,5 @@ RUN chown -R user:user /vol
 RUN chmod -R 755 /vol/web
 
 USER user
+
+

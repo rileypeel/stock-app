@@ -8,25 +8,19 @@ services:
       - "8000:8000"
     volumes:
       - ./api/app:/app
-    command: sh -c "python manage.py wait_for_db && python manage.py migrate && python manage.py runserver 0.0.0.0:8000" 
-    environment: 
-      - DB_HOST=db
-      - DB_NAME=app
-      - DB_USER=postgres
-      - DB_PASS=supersecretpassword
+    env_file:
+      - ./.env.prod
+    command: sh -c "python manage.py wait_for_db && python manage.py migrate && gunicorn app.wsgi:application --bind 0.0.0.0:8000"
     depends_on:
       - db
   db:
     image: postgres:10-alpine
-    environment:
-      - POSTGRES_DB=app
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=supersecretpassword
+    env_file:
+      - ./.env.prod.db
   fe:
     build:
       context: ./fe
     ports:
-      - "8080:8080"
+      - "8080:80"
     volumes:
       - ./fe:/fe
-    command: sh -c "npm run serve"
