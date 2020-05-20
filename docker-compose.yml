@@ -15,7 +15,7 @@ services:
       - DB_USER=postgres
       - DB_PASS=supersecretpassword
     env_file:
-      - api/app/.env.dev
+      - .rileysenv.dev
     depends_on:
       - db
   db:

@@ -64,6 +64,7 @@ function Ticker(symbol, initDay = false) {
         'resolution': constants.RESOLUTIONS[this.cfg.period],
         'from': this.cfg.startDate
       }
+      console.log(new Date(this.cfg.startDate * 1000))
       this.cfg.data.past = []
       this.getData(params)
     },
@@ -117,7 +118,7 @@ function Ticker(symbol, initDay = false) {
       this.setStock()
     },
     init() {
-      this.cfg.startDate = new Date(Date.now() - 24 * 3600 * 1000).getTime() / 1000
+      this.cfg.startDate = Math.round(new Date(Date.now() - 24 * 3600 * 1000).getTime() / 1000)
       this.cfg.period = constants.PERIOD_FIVE_MINUTE
     }
   }

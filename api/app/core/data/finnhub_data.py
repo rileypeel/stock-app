@@ -63,7 +63,7 @@ def get_fh_quote(ticker):
     }
     try:
         res = requests.get(url=f"{FINNHUB_QUOTE_URL}", params=params)
-    except requests.exceptions.RequestException
+    except requests.exceptions.RequestException:
         raise APIException("Failed to connect to Finnhub API")
 
     if res.status_code == 200:
