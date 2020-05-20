@@ -22,7 +22,7 @@ def get_simfin_id(ticker):
 	"""Call simfin api to get the id for the ticker"""
 	try:
 		res = requests.get(f"{SIMFIN_ID_URL}{ticker}?api-key={SIMFIN_KEY}")
-	except:
+	except requests.exceptions.RequestException:
 		print("Error retrieving data from SIMFIN API")
 
 	if res.status_code == 200:

@@ -54,7 +54,6 @@ class StockSerializer(serializers.ModelSerializer):
 
 class HoldingSerializer(serializers.ModelSerializer):
     """Serializer for Holding objects"""
-    
     stock = serializers.StringRelatedField()
     portfolio = serializers.StringRelatedField()
     

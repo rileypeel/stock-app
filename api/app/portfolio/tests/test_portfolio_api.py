@@ -11,28 +11,21 @@ from portfolio.serializers import StockSerializer, PortfolioSerializer
 
 PORTFOLIO_URL = reverse('portfolio:portfolio-list')
 
-
 def detail_url(portfolio_id):
     return reverse("portfolio:portfolio-detail", args=[portfolio_id])
-
 
 def sample_user(email='sandor@thehound.ca', password='chickens'):
     return get_user_model().objects.create_user(email, password)
 
-
 def sample_portfolio(user, name='rileys portfolio', balance=10000):
-
     return Portfolio.objects.create(user=user, name=name, balance=balance)
 
-
 def sample_stock(name='Apple Inc', ticker='AAPL', last_price=100.00):
-
     return Stock.objects.create(name=name, ticker=ticker, last_price=last_price)
 
 
 class PublicApiTests(TestCase):
     """Test API is not available to unauthenticated users"""
-
     def setUp(self):
         self.client = APIClient()
 

@@ -1,5 +1,4 @@
 from django.core.management.base import BaseCommand
-from core.data.data import add_stocks
 
 
 class Command(BaseCommand):

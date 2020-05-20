@@ -20,11 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'fvtb)3y$4az*%dja9qm+wdxh^wpo^mi!2@-vtpl$+dt^1*#7u&'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 
 ALLOWED_HOSTS = ['0.0.0.0', 'localhost']
 
@@ -130,6 +129,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
 AUTH_USER_MODEL = 'core.User'
 
 # Static files (CSS, JavaScript, Images)

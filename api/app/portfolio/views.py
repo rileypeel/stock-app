@@ -1,11 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from core.models import Stock, Portfolio, Holding, Transaction, DailyPrice
 from portfolio import serializers
-from core.data.data import update_stock
 from core.data import finnhub_data as fh
 from decimal import Decimal
 
@@ -59,8 +58,6 @@ class PortfolioView(APIView):
 
     def get(self, request):
         """return portfolios assigned to user"""
-        print("hit endpoint")
-        print(request)
         portfolios = Portfolio.objects.filter(
             user=self.request.user).distinct()
         serializer = serializers.PortfolioSerializer(portfolios, many=True)
@@ -139,6 +136,7 @@ class TransactionView(APIView):
 
     def post(self, request, id):
         """Allow a user to post transactions aka buy or sell a stock"""
+        
         try:
             portfolio = Portfolio.objects.get(id=id)
         except Portfolio.DoesNotExist:
@@ -146,28 +144,34 @@ class TransactionView(APIView):
 
         if self.request.user != portfolio.user:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
         try:
-            stock = Stock.objects.get(ticker=request.data['ticker'])
+            stock = Stock.objects.get(ticker=request.data.get('ticker'))
         except Stock.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        except KeyError:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         try:
             holding = Holding.objects.filter(
                 portfolio=portfolio).get(stock=stock)
         except Holding.DoesNotExist:
             holding = None
         
-        if request.data['order_type'] == 'Market':
-            request.data['price'] = Decimal(fh.get_fh_quote(stock.ticker)['c']).quantize(Decimal('0.01'))
+        data = request.data.dict()
+        if data['order_type'] == 'Market':
+            data['price'] = fh.get_fh_quote(stock.ticker)['c']
 
         context = {'portfolio': portfolio, 'stock': stock, 'holding': holding}
         serializer = serializers.TransactionSerializer(
-            data=request.data, context=context)
-
+            data=data, context=context)
+        
         if serializer.is_valid():
-            num_shares = int(request.data['number_of_shares'])
-            price = float(request.data['price'])*num_shares
-
-            if request.data['is_buy'] == True:
+            
+            num_shares = serializer.validated_data['number_of_shares']
+            price = serializer.validated_data['price']
+            
+            if serializer.validated_data['is_buy']:
                 if holding is None:
                     Holding.objects.create(
                         portfolio=portfolio,
@@ -177,21 +181,19 @@ class TransactionView(APIView):
                     )
                 else:
                     holding.number_of_shares = int(
-                        holding.number_of_shares)+num_shares
-                    holding.average_cost = holding.average_cost + Decimal(price)
+                        holding.number_of_shares) + num_shares
+                    holding.average_cost = holding.average_cost + price
                     holding.save()
-                portfolio.balance = float(portfolio.balance)-price
+                portfolio.balance = portfolio.balance - price * num_shares
             else:
                 if num_shares == int(holding.number_of_shares):
                     holding.delete()
                 else:
                     holding.number_of_shares = int(
-                        holding.number_of_shares)-num_shares
-                    print(num_shares)
-                    print(holding.average_cost)
-                    holding.average_cost -= request.data['price'] * num_shares
+                        holding.number_of_shares) - num_shares
+                    holding.average_cost -= price * num_shares
                     holding.save()
-                portfolio.balance = float(portfolio.balance)+price
+                portfolio.balance = portfolio.balance + price * num_shares
             serializer.save(stock=stock, portfolio=portfolio)
             portfolio.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

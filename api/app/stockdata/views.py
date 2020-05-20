@@ -6,9 +6,7 @@ from rest_framework.response import Response
 from django.db.models.functions import Trunc
 from django.db.models import F, Avg, DateTimeField
 import time, json, datetime
-from core.data.data import update_stock
 from core.models import MinutePrice, DailyPrice, Stock
-from core.data.data import is_intraday
 from stockdata import serializers
 from portfolio.serializers import StockSerializer
 import core.data.finnhub_data as fh
@@ -30,7 +28,6 @@ class DailyPrices(APIView):
             else:
                 return Response(status.HTTP_404_NOT_FOUND)
 
-        update_stock(stock)
         start_date = request.GET.get('date', '2000-01-01')
         start_date = parse_date(start_date)
 
