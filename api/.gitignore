@@ -1,5 +1,7 @@
-api_keys.py
-*.DS_Store
+#ignore DS_Store and DB migrations
+.DS_Store
+migrations/
+
 # Byte-compiled / optimized / DLL files
 !**/__pycache__/
 __pycache__/

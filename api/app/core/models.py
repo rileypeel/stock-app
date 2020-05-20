@@ -93,7 +93,8 @@ class Holding(models.Model):
     stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
     portfolio = models.ForeignKey(
         'Portfolio', related_name='holdings', on_delete=models.CASCADE)
-    average_cost = models.DecimalField(decimal_places=2, max_digits=10, default=69.00)
+    average_cost = models.DecimalField(decimal_places=5, max_digits=15, default=69.00)
+
     def __str__(self):
         """String representaion of a holding"""
         return f"{self.number_of_shares} shares of {self.stock}"
@@ -102,7 +103,7 @@ class PortfolioBalance(models.Model):
     """Model for recording account balance history of a portfolio."""
     time_stamp = models.DateTimeField()
     portfolio = models.ForeignKey('Portfolio', on_delete=models.CASCADE)
-    eod_balance = models.DecimalField(max_digits=10, decimal_places=2)
+    eod_balance = models.DecimalField(max_digits=15, decimal_places=5)
 
 class Portfolio(models.Model):
     """Model for a users stock portfolio"""
@@ -112,7 +113,7 @@ class Portfolio(models.Model):
     )
     name = models.CharField(max_length=255)
     balance = models.DecimalField(
-        max_digits=15, decimal_places=2, default=10000.00)
+        max_digits=15, decimal_places=5, default=10000.00)
 
     def __str__(self):
         """String representation of a Portfolio"""
@@ -124,15 +125,15 @@ class Transaction(models.Model):
     portfolio = models.ForeignKey('Portfolio', on_delete=models.CASCADE)
     stock = models.ForeignKey('Stock', on_delete=models.CASCADE)
     is_buy = models.BooleanField()
-    price = models.DecimalField(max_digits=10, decimal_places=3)
+    price = models.DecimalField(max_digits=15, decimal_places=5)
     number_of_shares = models.IntegerField()
-    limit_price = models.DecimalField(max_digits=10, decimal_places=3, null=True)
+    limit_price = models.DecimalField(max_digits=15, decimal_places=5, null=True)
     order_type = models.CharField(max_length=255, default='Market')
     time_stamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
         """String representation of a Transaction"""
         if self.is_buy:
-            return f"BUY {self.stock} {self.number_of_shares} @ {self.price_per_share}"
+            return f"BUY {self.stock} {self.number_of_shares} @ {self.price}"
         else:
-            return f"SELL {self.stock} {self.number_of_shares} @ {self.price_per_share}"
+            return f"SELL {self.stock} {self.number_of_shares} @ {self.price}"

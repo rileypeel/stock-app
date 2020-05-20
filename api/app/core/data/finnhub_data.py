@@ -2,6 +2,7 @@ import json, requests, datetime, pytz
 from core.data.api_urls import FINNHUB_URL, FINNHUB_QUOTE_URL, FINNHUB_BASE_URL
 from core.data.api_keys import FINNHUB_KEY
 from core.models import Stock
+from app.utils.exceptions import APIException
 
 INDICES = {'S&P 500': '^GSPC', 'DOW JONES': '^DJI', 'NASDAQ': '^IXIC', 'S&P/TSX Composite': '^GSPTSE'}
 
@@ -13,14 +14,12 @@ def get_exchange_list():
     }
     try: 
         res = requests.get(url=f"{FINNHUB_URL}exchange", params=params)
-    except:
-        print("Failed to retrieve data from FINNHUB API.")
-        return None
+    except requests.exceptions.RequestException:
+        raise APIException("Failed to connect to Finnhub API")
 
     if res.status_code == 200:
         return json.loads(res.text)
-    print(f"Error: status code {res.status_code}")
-    return None
+    raise APIException("Failed to retrieve exchanges from Finnhub API")
 
 def get_stock_list(exchange):
     """Get list of all stocks supported by finnhub api"""
@@ -31,13 +30,12 @@ def get_stock_list(exchange):
 
     try:
         res = requests.get(url=f"{FINNHUB_URL}symbol", params=params)
-    except:
-        print("Failed to retrieve data from FINNHUB API.")
-        return None
+    except requests.exceptions.RequestException:
+        raise APIException("Failed to connect to Finnhub API")
+        
     if res.status_code == 200:
         return res.json()
-    print(f"Error: status code {res.status_code}")
-    return None
+    raise APIException(f"Failed to retrieve data from Finnhub API. Code: {res.status_code}")
 
 def get_data_fh(ticker, time_from, time_to, resolution):
     """Get historical daily data from world trading data api"""
@@ -50,14 +48,12 @@ def get_data_fh(ticker, time_from, time_to, resolution):
     }
     try:
         res = requests.get(url=f"{FINNHUB_URL}candle", params=params)
-    except:
-        print("Failed to retrieve data from FINNHUB API.")
-        return None
+    except requests.exceptions.RequestException:
+        raise APIException("Failed to connect to Finnhub API")
 
     if res.status_code == 200:
         return json.loads(res.text)
-    print(f"Error: status code {res.status_code}")
-    return None
+    raise APIException(f"Failed to retrieve data from Finnhub API. Code: {res.status_code}")
 
 def get_fh_quote(ticker):
     """Get quote for a ticker from finnhub api"""
@@ -67,14 +63,12 @@ def get_fh_quote(ticker):
     }
     try:
         res = requests.get(url=f"{FINNHUB_QUOTE_URL}", params=params)
-    except:
-        print("Failed to retrieve data from FINNHUB API.")
-        return None
+    except requests.exceptions.RequestException
+        raise APIException("Failed to connect to Finnhub API")
 
     if res.status_code == 200:
         return json.loads(res.text)
-    print(f"Error: status code {res.status_code}")
-    return None
+    raise APIException(f"Failed to retrieve data from Finnhub API. Code: {res.status_code}")
 
 def get_indices_quote():
     """Get quotes for list of major indices"""
@@ -93,14 +87,12 @@ def get_news():
     }
     try: 
         res = requests.get(url=f"{FINNHUB_BASE_URL}news", params=params)
-    except:
-        print("Failed to retrieve data from FINNHUB API.")
-        return None
+    except requests.exceptions.RequestException as ex:
+        raise APIException("Failed to connect to Finnhub API")
 
     if res.status_code == 200:
         return res.json()
-    print(f"Error: status code {res.status_code}")
-    return None
+    raise APIException(f"Failed to retrieve data from Finnhub API. Code: {res.status_code}")
 
 def get_recommend(ticker):
     """get analyst recommendation data from finnhub api"""
@@ -110,15 +102,13 @@ def get_recommend(ticker):
     }
     try:
         res = requests.get(url=f"{FINNHUB_URL}recommendation", params=params)
-    except:
-        print("Failed to retrieve data from FINNHUB API.")
-        return None
+    except requests.exceptions.RequestException:
+        raise APIException("Failed to connect to Finnhub API")
 
     if res.status_code == 200:
         return res.json()
     else:
         print(f"Error: status code {res.status_code}")
-        return None
 
 def format_data(data):
     """Change the format of the candle data to timestamped list of dicts"""

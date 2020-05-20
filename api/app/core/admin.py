@@ -27,6 +27,5 @@ class UserAdmin(BaseUserAdmin):
             'email', 'password1', 'password2')}),
     )
 
-
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Stock)

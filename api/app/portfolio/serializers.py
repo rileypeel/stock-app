@@ -33,7 +33,7 @@ class TransactionSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     "You do not have enough shares to sell")
         return data
-
+        
 
 class PortfolioSerializer(serializers.ModelSerializer):
     """Serializer for Portfolio objects"""
@@ -54,7 +54,6 @@ class StockSerializer(serializers.ModelSerializer):
 
 class HoldingSerializer(serializers.ModelSerializer):
     """Serializer for Holding objects"""
-    
     stock = serializers.StringRelatedField()
     portfolio = serializers.StringRelatedField()
     

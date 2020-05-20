@@ -1,3 +1,4 @@
+from unittest import mock
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase
@@ -6,6 +7,7 @@ from rest_framework.test import APIClient
 from core.models import Stock, Portfolio, Transaction, Holding
 from portfolio.serializers import StockSerializer, PortfolioSerializer, TransactionSerializer
 
+MOCK_PRICE = 100
 
 def transaction_detail_url(transaction_id):
     """helper function to get transaction detail url"""
@@ -39,6 +41,7 @@ class PublicApiTests(TestCase):
         self.client = APIClient()
         self.user = sample_user()
 
+    
     def test_unauthenticated_get(self):
         """Test that unauthenticated user cannot retrieve data from api"""
 
@@ -127,13 +130,13 @@ class PrivateApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(serializer.data, res.data)
 
-    def test_buying_stock(self):
+    @mock.patch('core.data.finnhub_data.get_fh_quote', return_value={'c': MOCK_PRICE})
+    def test_buying_stock(self, mock_func):
         """Test posting a buy transaction"""
         stock = sample_stock()
         portfolio = sample_portfolio(self.user)
         payload = {
             'is_buy': True,
-            'price_per_share': 150.00,
             'number_of_shares': 2,
             'ticker': stock.ticker,
             'order_type': 'Market'
@@ -147,24 +150,28 @@ class PrivateApiTests(TestCase):
         self.assertEqual(
             portfolio.balance,
             initial_balance -
-            payload['price']*payload['number_of_shares']
-        )
+            MOCK_PRICE * payload['number_of_shares']
+        ) 
 
         holdings = Holding.objects.filter(portfolio=portfolio)
         holding = holdings.get(stock=stock)
         self.assertEqual(holding.number_of_shares, 2)
         transaction = Transaction.objects.get(id=res.data['id'])
+        ticker = payload.pop('ticker')
+        self.assertEqual(ticker, getattr(transaction, 'stock').ticker)
+
         for key in payload.keys():
             self.assertEqual(payload[key], getattr(transaction, key))
 
         self.assertEqual(str(stock), str(transaction.stock)) 
         self.assertEqual(str(portfolio), str(transaction.portfolio))
-
+        payload.update({'ticker': ticker})
         res = self.client.post(transaction_url(portfolio.id), payload)
         holding.refresh_from_db()
         self.assertEqual(holding.number_of_shares, 4)
 
-    def test_buying_stock_invalid(self):
+    @mock.patch('core.data.finnhub_data.get_fh_quote', return_value={'c': MOCK_PRICE})
+    def test_buying_stock_invalid(self, mock_func):
         """Test buying stock, not enough money in portfolio"""
         stock = sample_stock()
         portfolio = sample_portfolio(self.user, balance=100.00)
@@ -178,7 +185,8 @@ class PrivateApiTests(TestCase):
         res = self.client.post(transaction_url(portfolio.id), payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_selling_all_stock(self):
+    @mock.patch('core.data.finnhub_data.get_fh_quote', return_value={'c': MOCK_PRICE})
+    def test_selling_all_stock(self, mock_func):
         """Test selling all shares"""
         stock = sample_stock()
         portfolio = sample_portfolio(self.user)
@@ -188,27 +196,28 @@ class PrivateApiTests(TestCase):
             portfolio=portfolio,
             number_of_shares=4,
         )
-        payload = {'is_buy': False, 'price': 200.00,
+        payload = {'is_buy': False,
                    'number_of_shares': 2, 'ticker': stock.ticker, 'order_type': 'Market'}
         res = self.client.post(transaction_url(portfolio.id), payload)
         portfolio.refresh_from_db()
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             portfolio.balance,
-            initial_balance+payload['price'] *
+            initial_balance + MOCK_PRICE *
             payload['number_of_shares']
         )
         transaction = Transaction.objects.get(id=res.data['id'])
+        ticker = payload.pop('ticker')
+        self.assertEqual(ticker, getattr(transaction, 'stock').ticker)
         for key in payload.keys():
             self.assertEqual(payload[key], getattr(transaction, key))
 
-        self.assertEqual(str(stock), str(transaction.stock)
-                         )  # not sure about this yet
+        self.assertEqual(str(stock), str(transaction.stock))
         self.assertEqual(str(portfolio), str(transaction.portfolio))
 
         holding.refresh_from_db()
         self.assertEqual(holding.number_of_shares, 2)
-
+        payload.update({'ticker': ticker})
         res = self.client.post(transaction_url(portfolio.id), payload)
         try:
             holding.refresh_from_db()
@@ -216,6 +225,7 @@ class PrivateApiTests(TestCase):
             holding = None
         self.assertIsNone(holding)
 
+    #@mock.patch('core.data.finnhub_data.get_fh_quote', return_value={'c': MOCK_PRICE})
     def test_selling_stock_invalid(self):
         """Test posting a sell transaction that is not valid, 
         ie: not holding that stock or not enough shares"""
@@ -243,4 +253,4 @@ class PrivateApiTests(TestCase):
         other_client = APIClient()
         user2 = sample_user(email='jonsnow@live.ca')
         other_client.force_authenticate(user2)
-        # TODO finish this test
+        
