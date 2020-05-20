@@ -125,7 +125,11 @@ class Quote(APIView):
 
     def get(self, request, ticker):
         """Get quote for ticker"""
-        data = fh.get_fh_quote(ticker)
+        ticker = ticker.upper()
+        try:
+            data = fh.get_fh_quote(ticker)
+        except APIException:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(data=data, status=status.HTTP_200_OK)
 
 class CompanyInfo(APIView):
@@ -138,7 +142,6 @@ class CompanyInfo(APIView):
         data = get_data(ticker)
         if data is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        print(data)
         return Response(status=status.HTTP_200_OK, data=data)
 
 

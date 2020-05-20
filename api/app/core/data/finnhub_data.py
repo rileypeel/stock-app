@@ -67,7 +67,7 @@ def get_fh_quote(ticker):
         raise APIException("Failed to connect to Finnhub API")
 
     if res.status_code == 200:
-        return json.loads(res.text)
+        return {'ticker': ticker, 'quote': json.loads(res.text)['c']}
     raise APIException(f"Failed to retrieve data from Finnhub API. Code: {res.status_code}")
 
 def get_indices_quote():

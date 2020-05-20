@@ -46,7 +46,7 @@
           </div>
           <div v-if="showQuote" class="grey-border">
             <el-row><p> {{ quoteSym }}</p></el-row>
-            <el-row><p>Last price: {{ quote.c }}</p></el-row>
+            <el-row><p>Last price: {{ quote }}</p></el-row>
           </div>
           <div v-if="quoteErr">
             <p>Stock symbol not found.</p>
@@ -173,9 +173,10 @@ export default {
       this.loadingQuote = true;
       tickerService.getQuote(this.trans.ticker).then((data) => {
         if(data) {
-          this.quote = data;
+          console.log(data)
+          this.quote = data.quote;
           this.loadingQuote = false;
-          this.quoteSym = this.trans.ticker
+          this.quoteSym = data.ticker
           this.showQuote = true;
         } else {
           this.loadingQuote = false;
