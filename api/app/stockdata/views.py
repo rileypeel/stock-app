@@ -11,6 +11,7 @@ from stockdata import serializers
 from portfolio.serializers import StockSerializer
 import core.data.finnhub_data as fh
 from core.data.simfin_data import get_data
+from app.utils.exceptions import APIException
 
 class DailyPrices(APIView):
     """Endpoint for retrieving daily price stock data from database, not currently used in Application"""
@@ -151,12 +152,13 @@ class FinnhubData(APIView):
         time_from = request.GET.get('from', '946684800')
         time_to = request.GET.get('to', str(int(time.time())))
         resolution = request.GET.get('resolution', 'D')
-        data = fh.get_data(ticker, time_from, time_to, resolution)
-
-        if len(data):
+        try:
+            data = fh.get_data(ticker, time_from, time_to, resolution)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        if not len(data):
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = serializers.DataSerializer(data, many=True)
-
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
 
@@ -182,8 +184,9 @@ class AnalystRecommendation(APIView):
 
     def get(self, request, ticker):
         """Endpoint for analyst reccomendations"""
-        data = fh.get_recommend(ticker)
-        if data is None:
+        try:
+            data = fh.get_recommend(ticker)
+        except APIException:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_200_OK, data=data)
 
@@ -195,8 +198,9 @@ class StockNews(APIView):
 
     def get(self, request):
         """Endpoint for getting news"""
-        data = fh.get_news()
-        if data is None:
+        try:
+            data = fh.get_news()
+        except APIException:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_200_OK, data=data)
 
@@ -207,7 +211,9 @@ class IndexQuotes(APIView):
 
     def get(self, request):
         """Endpoint for get requests"""
-        data = fh.get_indices_quote()
-        if data:
-            return Response(data=data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        try:
+            data = fh.get_indices_quote()
+        except APIException:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(data=data, status=status.HTTP_200_OK)
+        

@@ -8,3 +8,4 @@ def new_secret_key():
     f.write(f"\nSECRET_KEY={new_key}")
     f.close()
     return new_key
+

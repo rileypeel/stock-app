@@ -146,7 +146,7 @@ class TransactionView(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         try:
-            stock = Stock.objects.get(ticker=request.data.get('ticker'))
+            stock = Stock.objects.get(ticker=request.data['ticker'])
         except Stock.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except KeyError:
@@ -160,7 +160,10 @@ class TransactionView(APIView):
         
         data = request.data.dict()
         if data['order_type'] == 'Market':
-            data['price'] = fh.get_fh_quote(stock.ticker)['c']
+            try:
+                data['price'] = fh.get_fh_quote(stock.ticker)['c']
+            except APIException:
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         context = {'portfolio': portfolio, 'stock': stock, 'holding': holding}
         serializer = serializers.TransactionSerializer(

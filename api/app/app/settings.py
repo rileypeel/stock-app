@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 from corsheaders.defaults import default_headers
 import os
-from django.core.management.utils import get_random_secret_key
 from app.utils.utils import new_secret_key
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
