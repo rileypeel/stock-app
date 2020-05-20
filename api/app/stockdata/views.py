@@ -153,7 +153,7 @@ class FinnhubData(APIView):
         resolution = request.GET.get('resolution', 'D')
         data = fh.get_data(ticker, time_from, time_to, resolution)
 
-        if len(data) == 0:
+        if len(data):
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = serializers.DataSerializer(data, many=True)
 

@@ -170,7 +170,8 @@ class PrivateApiTests(TestCase):
         holding.refresh_from_db()
         self.assertEqual(holding.number_of_shares, 4)
 
-    def test_buying_stock_invalid(self):
+    @mock.patch('core.data.finnhub_data.get_fh_quote', return_value={'c': MOCK_PRICE})
+    def test_buying_stock_invalid(self, mock_func):
         """Test buying stock, not enough money in portfolio"""
         stock = sample_stock()
         portfolio = sample_portfolio(self.user, balance=100.00)
@@ -224,6 +225,7 @@ class PrivateApiTests(TestCase):
             holding = None
         self.assertIsNone(holding)
 
+    #@mock.patch('core.data.finnhub_data.get_fh_quote', return_value={'c': MOCK_PRICE})
     def test_selling_stock_invalid(self):
         """Test posting a sell transaction that is not valid, 
         ie: not holding that stock or not enough shares"""

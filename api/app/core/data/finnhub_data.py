@@ -5,6 +5,7 @@ from core.models import Stock
 
 INDICES = {'S&P 500': '^GSPC', 'DOW JONES': '^DJI', 'NASDAQ': '^IXIC', 'S&P/TSX Composite': '^GSPTSE'}
 
+
 def get_exchange_list():
     """Get list of exchanges from finnhub api"""
     params = {
@@ -36,7 +37,7 @@ def get_stock_list(exchange):
         return None
     if res.status_code == 200:
         return res.json()
-    print(f"Error: status code {res.status_code}")
+    print(f"Error retrieving data, HTTP status code: {res.status_code}")
     return None
 
 def get_data_fh(ticker, time_from, time_to, resolution):
@@ -67,7 +68,8 @@ def get_fh_quote(ticker):
     }
     try:
         res = requests.get(url=f"{FINNHUB_QUOTE_URL}", params=params)
-    except:
+    except Exception as ex:
+        print(ex)
         print("Failed to retrieve data from FINNHUB API.")
         return None
 
@@ -112,13 +114,12 @@ def get_recommend(ticker):
         res = requests.get(url=f"{FINNHUB_URL}recommendation", params=params)
     except:
         print("Failed to retrieve data from FINNHUB API.")
-        return None
-
+        return 
+        
     if res.status_code == 200:
         return res.json()
     else:
         print(f"Error: status code {res.status_code}")
-        return None
 
 def format_data(data):
     """Change the format of the candle data to timestamped list of dicts"""

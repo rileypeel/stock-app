@@ -1,5 +1,5 @@
 #ignore DS_Store and DB migrations
-*.DS_Store
+.DS_Store
 migrations/
 
 # Byte-compiled / optimized / DLL files
