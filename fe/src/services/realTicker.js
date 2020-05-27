@@ -3,27 +3,21 @@
 // service function, requires a view from ./view.js
 //
 // this is a fake implementation of a ticker that the view can subscribe to
-import tickerService from './ticker.js';
+import tickerService from './ticker.js'
 import * as constants from '../constants/view'
+import timeService from './datetime'
 
 var subscriber
-var timeout
-function Ticker(symbol, initDay = false) {
+function Stock(stockSymbol, initStockData = true) {
 
   var stonks = {
     cfg: {
-      // per 2 seconds
-      refreshRate: 2,
-      min: 0,
-      max: 250,
-      periodCount: 50,
-      offset: 10,
-      date: null,
-      exchange: 'NASDAQ',
-      ticker: symbol,
-      startDate: '1577836800',
-      period: constants.PERIOD_DAILY,
-      data: {
+      ticker: stockSymbol,
+      name: '',
+      chartData: {
+        date: null,
+        period: constants.PERIOD_DAILY,
+        timeframe: constants.ONE_YEAR,
         past: [],
         current: {
           hi: 0,
@@ -34,6 +28,10 @@ function Ticker(symbol, initDay = false) {
           open: 0,
           timestamp: ''
         }
+      },
+      stockData: {
+        quote: 0,
+        info: {}
       }
     },
     getDate() {
@@ -43,56 +41,76 @@ function Ticker(symbol, initDay = false) {
     },
     getCurrentData() {
       // return the current data
-      return this.cfg.data.current
+      return this.cfg.chartData.current
     },
     getPastData() {
       // return the previous data
-      return this.cfg.data.past
+      return this.cfg.chartData.past
     },
     refreshDate() {
       // refresh the date every second
-      this.cfg.date = this.getDate()
-      subscriber && subscriber.setDate(this.cfg.date)
+      this.cfg.chartData.date = this.getDate()
+      subscriber && subscriber.setDate(this.cfg.chartData.date)
       setTimeout(() => this.refreshDate(), 1000)
     },
     setStock() {
       // set the ticker on the view
-      subscriber && subscriber.setStock(this.cfg.exchange, this.cfg.ticker)
+      subscriber && subscriber.setStock(this.cfg.ticker)
     },
-    loadData() { 
+    getStockDetail() {
+      tickerService.getTicker(this.cfg.ticker).then((data) => {
+        this.cfg.name = data.name
+      })
+    },
+    getQuote() {
+      tickerService.getQuote(this.cfg.ticker).then((data) => {
+        this.cfg.stockData.quote = data['quote']
+      })
+    },
+    getInfo() {
+      tickerService.stockInfo(this.cfg.ticker).then((data) => {
+        this.cfg.stockData.info = data
+      })
+    },
+    loadData() {
+      var from = 0
+      if (this.cfg.chartData.timeframe != constants.MAX) 
+        from = timeService.getStartDate(this.cfg.chartData.timeframe)
       var params = {
-        'resolution': constants.RESOLUTIONS[this.cfg.period],
-        'from': this.cfg.startDate
+        'resolution': constants.RESOLUTIONS[this.cfg.chartData.period],
+        'from': from
       }
-      console.log(new Date(this.cfg.startDate * 1000))
-      this.cfg.data.past = []
+      this.cfg.chartData.past = []
       this.getData(params)
     },
     getData(params) {
       //get data from API
       tickerService.getCandleData(this.cfg.ticker, params).then((candleData) => {
-        if(candleData) {
+        if (candleData) {
           for(var d in candleData) {
             this.addData(candleData[d])
           }
-          subscriber && subscriber.setData(this.cfg.data.past.concat({ ...this.cfg.data.current }))
+          subscriber && subscriber.setData(this.cfg.chartData.past.concat({ ...this.cfg.chartData.current }))
         } 
       })
-      if(![constants.PERIOD_DAILY, constants.PERIOD_MONTHLY].includes(this.cfg.period)) {
+      //Leave out the real-time calls to API for now 
+      /* 
+      if (![constants.PERIOD_DAILY, constants.PERIOD_MONTHLY].includes(this.cfg.period)) {
         timeout = setTimeout(() => {
           var params = {
             'resolution': constants.RESOLUTIONS[this.cfg.period],
-            'from': this.cfg.data.current.timestamp
+            'from': this.cfg.chartData.current.timestamp
           }
           this.getData(params)
         }, 1000*constants.TIMEOUTS[this.cfg.period])
       }
+      */
     },
     addData(candleData) {
       //add data to the current entry and update past 
-      if(this.cfg.data.current.timestamp == candleData.time_stamp) return
-      var past = this.cfg.data.past
-      var current = this.cfg.data.current
+      if (this.cfg.chartData.current.timestamp == candleData.time_stamp) return
+      var past = this.cfg.chartData.past
+      var current = this.cfg.chartData.current
       var copy = Object.assign({}, current)
       past.push(copy)
       current.hi = parseFloat(candleData.high_price)
@@ -103,28 +121,32 @@ function Ticker(symbol, initDay = false) {
       current.open = parseFloat(candleData.open_price)
       current.timestamp = candleData.time_stamp
     },
-    start() {
+    start(init) {
       // start the stonks service
       this.refreshDate()
-      this.loadData()
-    },
+      if (init) {
+        this.getStockDetail()
+        this.getQuote()
+        this.getInfo()
+        this.loadData()
+      }
+      
+    },/* FOR REAL TIME 
     halt() {
-      clearTimeout(timeout)
-    },
+      //clearTimeout(timeout)
+    }, */
     subscribe(view) {
       // provide a view to subscribe to the service
       subscriber = view
       //subscriber.update()
+      subscriber.cfg.startDate = this.cfg.chartData.startDate // do this in the view buddy
+      subscriber.cfg.period = this.cfg.chartData.period
       this.setStock()
-    },
-    init() {
-      this.cfg.startDate = Math.round(new Date(Date.now() - 24 * 3600 * 1000).getTime() / 1000)
-      this.cfg.period = constants.PERIOD_FIVE_MINUTE
     }
   }
-  if(initDay) stonks.init()
-  stonks.start()
+  //stonks.init()
+  stonks.start(initStockData)
   return stonks
 }
 
-export default Ticker
+export default Stock

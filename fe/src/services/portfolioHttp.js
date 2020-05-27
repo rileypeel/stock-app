@@ -3,18 +3,18 @@
 // constants
 
 // private variables and functions
-import httpService from '../services/http.js';
+import httpService from './http.js'
 // service object
 const portfolioService = {
 
   async getPortfolios() {
-    var portfolios = await httpService.get('api/portfolio/');
-    return portfolios;
+    var portfolios = await httpService.get('api/portfolio/')
+    return portfolios
   },
   async getPortfolio(id) {
     // get a portfolio by its id
-    var portfolio = await httpService.get('api/portfolio/'.concat(id));
-    return portfolio;
+    var portfolio = await httpService.get('api/portfolio/'.concat(id))
+    return portfolio
   },
   async getHoldings(id) {
     //return holdings for a portfolio
@@ -23,12 +23,9 @@ const portfolioService = {
   },
   async newPortfolio(payload) {
     // make a new portfolio
-   var response = await httpService.post('api/portfolio/', payload);
-   if(response.status == 201) {
-     return true;
-   } else {
-     return false;
-   }
+    var response = await httpService.post('api/portfolio/', payload)
+    var statusOk = response.status == 201 ? true : false
+    return statusOk
   },
   async delPortfolio(portfolioId) {
     var response = await httpService.delete('api/portfolio/'.concat(portfolioId))
@@ -36,13 +33,13 @@ const portfolioService = {
   },
   async getTransactions(portfolioId) {
     // return a list of transactions for a specific portfolio
-    var transactions = await httpService.get('api/portfolio/'.concat(portfolioId, '/transaction'));
-    return transactions;
+    var transactions = await httpService.get('api/portfolio/'.concat(portfolioId, '/transaction'))
+    return transactions
   },
   async newTransaction(payload, portfolioId) {
     // make a new transaction
-    var response = await httpService.post('api/portfolio/'.concat(portfolioId, '/transaction'), payload);
-    if(response.status == 201) {
+    var response = await httpService.post('api/portfolio/'.concat(portfolioId, '/transaction'), payload)
+    if (response.status == 201) {
       return 201
     }
     return response.json()

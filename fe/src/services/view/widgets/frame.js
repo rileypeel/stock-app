@@ -8,7 +8,7 @@ function drawYAxis(view) {
   
   canvas.selectAll('.y').remove()
   var decPlaces = 0 
-  if(quartiles[quartiles.length-1] - quartiles[0] < 4) decPlaces = 2
+  if (quartiles[quartiles.length-1] - quartiles[0] < 4) decPlaces = 2
   canvas.selectAll('.y')
     .data(quartiles)
     .enter()
@@ -52,7 +52,7 @@ function drawXAxis(view) {
         .attr('y2', c.chartYOffset + c.chartHeight)
       
       // draw the bottom axis labels 
-      if(!view.smallSize) {
+      if (view.size == 1) {
         canvas.append('text')
           .attr('x', c.chartXOffset + (c.chartXQuartile * (c.chartXAxisLabels.length - i)) - 30)
           .attr('y', c.chartYOffset + c.chartHeight + 20)
@@ -62,11 +62,11 @@ function drawXAxis(view) {
           .attr('font-weight', 'light')
           .text(d)
       }
-      if(view.smallSize) {
+      if (view.size < 1) {
         timeLabelY = 20
-        if(i % 2 == 1) c.chartXAxisBottomLabels[i] = ''
+        if (i % 2 == 1) c.chartXAxisBottomLabels[i] = ''
       }
-      if(constants.SHORT_PERIODS.includes(view.cfg.period)) { 
+      if (constants.SHORT_PERIODS.includes(view.cfg.period)) { 
         canvas.append('text')
           .attr('x', c.chartXOffset + (c.chartXQuartile * (c.chartXAxisLabels.length - i)) - 30)
           .attr('y', c.chartYOffset + c.chartHeight + timeLabelY)

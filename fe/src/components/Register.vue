@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import userService from '../services/user.js';
+import userService from '../services/user.js'
 export default {
   name: "Register",
   data () {
@@ -39,34 +39,34 @@ export default {
   methods: {
     submitForm() {
       this.$refs['registerForm'].validate((valid) => {
-        if(valid) {
+        if (valid) {
           userService.newUser(this.userCredentials).then((success) => {
-            if(success) {
+            if (success) {
               this.$notify({
                 title: 'Success',
                 message: 'You have successfully created an account.',
                 type: 'success',
                 duration: 2000
-              });
-              this.$router.push("Login");
+              })
+              this.$router.push("Login")
             } else {
               this.$notify({
                 title: 'Error',
                 message: 'Account was not created, Email address may already be taken.',
                 type: 'error',
                 duration: 2000
-              });
+              })
             }
-          });
+          })
         } else {
           this.$notify({
             title: 'Error',
             message: 'Please enter valid input.',
             type: 'error',
             duration: 2000
-          });
+          })
         }
-      });
+      })
     }
   }
 }

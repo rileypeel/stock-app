@@ -17,7 +17,7 @@
           <el-form-item prop="portfolioId">
             <el-select v-model="portfolioId" placeholder="Select a portfolio">
               <el-option
-                v-for="portfolio in portfolios"
+                v-for="portfolio in portfolios.portfolios"
                 :key="portfolio.id"
                 :label="portfolio.name"
                 :value="portfolio.id">
@@ -82,43 +82,45 @@
 </template>
 
 <script>
-import tickerService from '../services/ticker.js';
-import portfolioService from '../services/portfolio.js';
+import tickerService from '../../services/ticker.js'
+import portfolioService from '../../services/portfolioHttp.js'
+import Portfolios from '../../services/view/portfolio'
+import View from '../../services/view/view'
 export default {
   name: "Transaction",
   components: {
   },
   data () {
     var selectValidate = (rule, value, callback) => {
-      if(this.portfolioId == '') {
-        callback(new Error("Please select a portfolio."));
+      if (this.portfolioId == '') {
+        callback(new Error("Please select a portfolio."))
       }
-      callback();
+      callback()
     }
     var tickerValidate = (rule, value, callback) => {
       tickerService.getTicker(value).then((res) => {
-        if(res) {
-          callback();
+        if (res) {
+          callback()
         } else {
-          callback(new Error("Symbol not found"));
+          callback(new Error("Symbol not found"))
         }
-      });
+      })
     }
     var posIntValidate = (rule, value, callback) => {
-      if(Number.isInteger(parseInt(value))) {
-        if(value>0) {
-          callback();
+      if (Number.isInteger(parseInt(value))) {
+        if (value > 0) {
+          callback()
         }
       }
-      callback(new Error("Please enter a number greater than 0."));
+      callback(new Error("Please enter a number greater than 0."))
     }
     var limitValidate = (rule, value, callback) => {
-      if(this.trans.orderType == 'Limit') {
-        if(!value) {
-          callback(new Error("Please enter a limit price."));
+      if (this.trans.orderType == 'Limit') {
+        if (!value) {
+          callback(new Error("Please enter a limit price."))
         }
       }
-      callback();
+      callback()
     }
     return {
       portfolios: '',
@@ -164,40 +166,33 @@ export default {
     }
   },
   mounted: function() {
-    this.getPortfolios()
+    this.portfolios = Portfolios(true)
+    this.view = View()
+    var id = this.portfolios.currentPortfolio.id
+    var ticker = this.view.cfg.ticker
+    if (id) this.portfolioId = id
+    if (ticker) this.trans.ticker = ticker
   },
   methods: {
     getQuote() {
       this.quoteErr = false
-      this.showQuote = false;
-      this.loadingQuote = true;
+      this.showQuote = false
+      this.loadingQuote = true
       tickerService.getQuote(this.trans.ticker).then((data) => {
-        if(data) {
-          console.log(data)
-          this.quote = data.quote;
-          this.loadingQuote = false;
+        if (data) {
+          this.quote = data.quote 
+          this.loadingQuote = false
           this.quoteSym = data.ticker
-          this.showQuote = true;
+          this.showQuote = true
         } else {
-          this.loadingQuote = false;
-          this.quoteErr = true;
-        }
-      });
-    },
-    getPortfolios() {
-      portfolioService.getPortfolios().then((data) => {
-        if(data) {
-          this.portfolios = data;
+          this.loadingQuote = false
+          this.quoteErr = true
         }
       })
     },
     convertType() {
-      this.trans.number_of_shares = parseInt(this.trans.number_of_shares);
-      if(this.trans.is_buy == 'Buy') {
-        this.trans.is_buy = true;
-      } else {
-        this.trans.is_buy = false;
-      }
+      this.trans.number_of_shares = parseInt(this.trans.number_of_shares)
+      this.trans.is_buy = this.trans.is_buy == 'Buy' ? true : false
     },
     confirm() {
       return this.$confirm(`<p>Please confirm the transaction: </br>${this.trans.order_type} Order </br>${this.trans.is_buy} ${this.trans.number_of_shares} shares of ${this.trans.ticker}</p>`, 'Confirmation', {
@@ -206,51 +201,40 @@ export default {
         type: 'info',
         dangerouslyUseHTMLString: true })
     },
+    notify(type, message) {
+      this.$notify({
+        title: `${type.charAt(0).toUpperCase()}${type.slice(1)}`,
+        message: message,
+        type: type,
+        duration: 2000
+      })
+    },
     submit() {
       this.$refs['transactionForm'].validate((valid) => {
-        if(valid) {
+        if (valid) {
           this.confirm()
           .then(() => {
             this.convertType()
             portfolioService.newTransaction(this.trans, this.portfolioId)
             .then((res) => {
-              if(res == 201) {
-                this.$notify({
-                title: 'Success',
-                message: 'You have successfully placed your order',
-                type: 'success',
-                duration: 2000
-                });
-                this.$router.push({ name: 'PortfolioDetail', params: { id: this.portfolioId } });
+              if (res == 201) {
+                this.notify('success', 'You have succesfully placed an order.')
+                this.$router.push({ name: 'PortfolioDetail', params: { id: this.portfolioId } })
               } else {
                 var message = res.non_field_errors.length > 0 ? res.non_field_errors[0] : "Error"
-                this.$notify({
-                title: 'Error',
-                message: message,
-                type: 'error',
-                duration: 2000
-              });
+                this.notify('error', message)
               }
-            });
+            })
           }).catch(() => {
             console.log("cancel")
-          });
+          })
         } else {
-          this.$notify({
-            title: 'Error',
-            message: 'Invalid form input',
-            type: 'error',
-            duration: 2000
-          });
+          this.notify('error', 'Invalid form input')
         }
-      });
+      })
     },
     limitForm() {
-      if(this.trans.order_type == 'Limit') {
-        this.showLimit = true;
-      } else {
-        this.showLimit = false;
-      }
+      this.showLimit = this.trans.order_type == 'Limit' ? true : false 
     }
   }
 }

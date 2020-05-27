@@ -43,7 +43,7 @@ class StockDetail(APIView):
     def get(self, request, ticker):
         """Return a detail view of a stock"""
         try:
-            stock = Stock.objects.get(ticker=ticker)
+            stock = Stock.objects.get(ticker__iexact=ticker)
         except Stock.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -146,7 +146,7 @@ class TransactionView(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         try:
-            stock = Stock.objects.get(ticker=request.data['ticker'])
+            stock = Stock.objects.get(ticker__iexact=request.data['ticker'])
         except Stock.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         except KeyError:
@@ -157,8 +157,8 @@ class TransactionView(APIView):
                 portfolio=portfolio).get(stock=stock)
         except Holding.DoesNotExist:
             holding = None
-        
-        data = request.data.dict()
+        data = request.data
+        if not isinstance(data, dict): data = data.dict()
         if data['order_type'] == 'Market':
             try:
                 data['price'] = fh.get_fh_quote(stock.ticker)['c']

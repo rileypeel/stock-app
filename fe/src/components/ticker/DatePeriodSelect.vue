@@ -5,10 +5,10 @@
           <el-col class="col" :span="11">    
             <el-select class="select" v-model="selectedTimeFrame" @change="changeSelectOptions()" placeholder="Time window">
               <el-option
-                v-for="(tf, key) in timeframes"
+                v-for="tf in timeframes"
                 :key="tf"
                 :label="tf"
-                :value="key"
+                :value="tf"
                 width="20">
               </el-option>
             </el-select>
@@ -30,10 +30,10 @@
 </template>
 
 <script>
-import { PERIODS, TIMEFRAMES, TIMEFRAME_PERIOD_MAP, MAX  } from '../../constants/view'
+import { PERIODS, TIMEFRAMES, TIMEFRAME_PERIOD_MAP  } from '../../constants/view'
 import Cfg from '../../services/cfg'
 import View from '../../services/view/view'
-import timeService from '../../services/datetime.js'
+
 
 export default {
   name: 'DatePeriodSelect',
@@ -43,21 +43,17 @@ export default {
     return {
       cfg,
       view,
-      selectedTimeFrame: '',
+      selectedTimeFrame: cfg.timeframe,
       periods: PERIODS,
       timeframes: TIMEFRAMES,
       tfMap: [],
-      selectedPeriod: ''
+      selectedPeriod: cfg.period
     }
   },
   methods: {
     changeView() {
       this.cfg.period = this.selectedPeriod
-      if(this.selectedTimeFrame == MAX) {
-        this.cfg.startDate = 0
-      } else {
-        this.cfg.startDate = timeService.getStartDate(this.selectedTimeFrame)
-      }
+      this.cfg.timeframe = this.selectedTimeFrame
       this.view.update()
     },
     changeSelectOptions() {

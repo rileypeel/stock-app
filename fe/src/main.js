@@ -9,12 +9,12 @@ import App from './App.vue'
 import Login from './components/Login.vue'
 import Home from './components/Home.vue'
 import Register from './components/Register.vue'
-import Transaction from './components/Transaction.vue'
+import Transaction from './components/stock/Transaction.vue'
 import User from './components/User.vue'
-import Portfolio from './components/Portfolio.vue'
-import PortfolioDetail from './components/PortfolioDetail.vue'
-import Stock from './components/Stock.vue'
-import StockDetail from './components/StockDetail.vue'
+import Portfolio from './components/portfolio/Portfolio.vue'
+import PortfolioDetail from './components/portfolio/PortfolioDetail.vue'
+import Stock from './components/stock/Stock.vue'
+import StockDetail from './components/stock/StockDetail.vue'
 import Ticker from './components/ticker/Ticker.vue'
 
 
@@ -41,8 +41,8 @@ const router = new Router({
 const isAuthenticated = () => (localStorage.getItem('token') == null) ? false : true
   
 router.beforeEach((to, from, next) => {
-  if(to.meta.requiresAuth) {
-    if(!isAuthenticated()) next({ name: 'Login' })
+  if (to.meta.requiresAuth) {
+    if (!isAuthenticated()) next({ name: 'Login' })
     else next()
   } 
   else next()  

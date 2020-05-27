@@ -1,5 +1,5 @@
 <template>
-  <div class="header" v-bind:class="classObject">
+  <div class="header" v-bind:style="styleObject">
     <span class="stock">
       <span class="exchange"></span>
       <span class="delimiter"> : </span>
@@ -14,16 +14,16 @@
 export default {
   name: 'Header',
   props: {
-    small: {
-      type: Boolean,
-      default: false
+    size: {
+      type: Number,
+      default: 1
     }
   },
-  computed: {
-    classObject: function() {
+  computed: { 
+    styleObject: function() {
+      var width = 600 * this.size - 10
       return {
-        'lg-header': !this.small,
-        'sml-header': this.small
+        width: `${width}px`
       }
     }
   }
@@ -34,7 +34,6 @@ export default {
 .header {
   height: 30px;
   padding: 5px;
-  width: 590px;
   font-size: 14px;
   background: black;
   border-top-left-radius: 10px;
@@ -59,15 +58,5 @@ export default {
 
 .ticker {
   color: aqua;
-}
-
-.lg-header {
-  padding: 5px;
-  width: 590px;
-}
-
-.sml-header {
-  padding: 5px;
-  width: 390px;
 }
 </style>
