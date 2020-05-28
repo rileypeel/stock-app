@@ -13,20 +13,20 @@ const httpPatch = 'PATCH'
 
 // private variables and functions
 var queryParams = (params) => {
-  const keys = Object.keys(params);
-  var queryStr = '?';
+  const keys = Object.keys(params)
+  var queryStr = '?'
   for(var key of keys) {
     queryStr = `${queryStr}${key}=${params[key]}&`
   }
-  return queryStr.slice(0, -1);
+  return queryStr.slice(0, -1)
 }
 // make a full address from an endpoint path
 var addr = (path, params) => {
   var url = `${api}${path}`
-  if(params) {
+  if (params) {
     url = url+ queryParams(params)
   }
-  return url;
+  return url
 }
 
 // turn an object into json
@@ -35,14 +35,14 @@ var json = (obj) => obj ? JSON.stringify(obj) : ''
 //create request header object with auth token
 var header = (notFile) => {
   var header = new Headers()
-  if(notFile) {
-    header = new Headers({'Content-Type':'application/json'});
+  if (notFile) {
+    header = new Headers({'Content-Type':'application/json'})
   }
-  var token = localStorage.getItem('token');
-  if(token != null) {
-    header.append('Authorization', ''.concat('Token ', token));
+  var token = localStorage.getItem('token')
+  if (token != null) {
+    header.append('Authorization', ''.concat('Token ', token))
   }
-  return header;
+  return header
 }
 // create the fetch() body
 var body = (method, data) => ({method, headers: header(true), body: json(data)})
@@ -54,12 +54,12 @@ var getBody = (method) => ({method, headers: header(true)})
 const httpService = {
   // GET request
   async get (path, params) { 
-    var response = await fetch(addr(path, params), getBody(httpGet));
-    if(response.status == 200) {
-      var data = await response.json();
-      return data;
+    var response = await fetch(addr(path, params), getBody(httpGet))
+    if (response.status == 200) {
+      var data = await response.json()
+      return data
     }
-    return false;
+    return false
   },
   // POST request
   post: async (path, data) => fetch(addr(path), body(httpPost, data)),

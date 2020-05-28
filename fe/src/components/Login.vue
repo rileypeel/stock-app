@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import userService from '../services/user.js';
+import userService from '../services/user.js'
 export default {
   name: "Login",
   data () {
@@ -35,34 +35,34 @@ export default {
   methods: {
     submitForm() {
       this.$refs['loginForm'].validate((valid) => {
-        if(valid) {
+        if (valid) {
           userService.login(this.userCredentials).then((success) => {
-            if(success) {
+            if (success) {
               this.$notify({
                 title: 'Success',
                 message: '',
                 type: 'success',
                 duration: 2000
-              });
-              this.$router.push("User");
+              })
+              this.$router.push("User")
             } else {
               this.$notify({
                 title: 'Error',
                 message: 'Login failed, please try again.',
                 type: 'error',
                 duration: 2000
-              });
+              })
             }
-          });         
+          })         
         } else {
           this.$notify({
             title: 'Error',
             message: 'Please enter valid username and password.',
             type: 'error',
             duration: 2000
-          });
+          })
         }
-      });
+      })
     }
   }
 }

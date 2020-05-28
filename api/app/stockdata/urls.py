@@ -8,7 +8,7 @@ urlpatterns = [
     path('company-info/<str:ticker>', views.CompanyInfo.as_view(), name='info'),
     path('fhdata/<str:ticker>', views.FinnhubData.as_view(), name='fh'),
     path('recommendation-data/<str:ticker>', views.AnalystRecommendation.as_view(), name='recommend'),
-    path('search/<str:ticker_str>', views.StockSearch.as_view(), name='search'),
+    path('search/<str:search_str>', views.StockSearch.as_view(), name='search'),
     path('news', views.StockNews.as_view(), name='news'),
     path('index-quote', views.IndexQuotes.as_view(), name='index')
 ]

@@ -12,11 +12,15 @@ const MIN_RECT_WIDTH = 1
 
 var obj
 
-function View(init = false, smallSize = false) {
+function View(init = false) {
   
   obj = obj || {
     ticker: null,
-    smallSize: '',
+    stockData: {
+      quote: 0,
+      info: {}
+    },
+    size: 1,
     quartiles: [0,0,0,0,0],
     min: 0,
     max: 0,
@@ -32,16 +36,18 @@ function View(init = false, smallSize = false) {
       // sets the date object in the header
       d3.select('.date').text(date)
     },
-    setStock(exchange, ticker) {
+    setSize(newSize) {
+      this.size = newSize
+    },
+    setStock(ticker) {
       // sets the view ticker
-      this.cfg.exchange = exchange
       this.cfg.ticker = ticker
       d3.select('.exchange').text(this.cfg.exchange)
       d3.select('.ticker').text(this.cfg.ticker)
     },
     setData(data) {
       if (!data.length) return
-      this.updateChartSize(this.smallSize)
+      this.updateChartSize()
       this.updateRect(data.length)
       this.calculateXLabels(data)
       this.calculateRange(data)
@@ -70,8 +76,8 @@ function View(init = false, smallSize = false) {
     },
     update() {
       if (this.ticker) {
-        this.ticker.cfg.startDate = this.cfg.startDate
-        this.ticker.cfg.period = this.cfg.period
+        this.ticker.cfg.chartData.timeframe = this.cfg.timeframe
+        this.ticker.cfg.chartData.period = this.cfg.period
         this.ticker.loadData()
       }
     },
@@ -96,26 +102,16 @@ function View(init = false, smallSize = false) {
       this.quartiles = [0, quarter, 2*quarter, 3*quarter, 4*quarter]
           .map(q => q + minMax.min)
     },
-    updateChartSize(small) {
+    updateChartSize() { 
       var chart = this.cfg.chart
-      if (small) {
-        chart.viewWidth = 400
-        chart.viewHeight = 200
-        chart.chartYOffset = 30
-        chart.chartYQuartile = 50
-        chart.chartXQuartile = 60
-        chart.fontSize = '12px'
-      } else {
-        chart.viewWidth = 600
-        chart.viewHeight = 300
-        chart.chartYOffset = 50
-        chart.chartXQuartile = 93
-        chart.chartYQuartile = 75
-        chart.fontSize = '12px'
-      }
+      chart.viewWidth = 600 * this.size
+      chart.viewHeight = 300 * this.size
+      chart.chartYOffset = 50 * this.size
+      chart.chartXQuartile = 93 * this.size
+      chart.chartYQuartile = 75 * this.size
+      chart.fontSize = '12px'
       chart.chartHeight = chart.viewHeight
       chart.chartWidth = chart.viewWidth - (chart.chartXOffset * 2)
-      //need to update rect
     },
     updateRect(dataLength) {
       var chart = this.cfg.chart
@@ -140,11 +136,9 @@ function View(init = false, smallSize = false) {
       for (var i = 0; i < 5; i ++) {
         labels[i] = new Date(data[data.length - 1 - (numberOfPtsPerQuartile * (i + 1))].timestamp * 1000)
         bottomLabels[i] = labels[i].toTimeString().substr(0,8)
-        labels[i] = `${labels[i].getFullYear()}/${labels[i].getMonth() + 1}/${labels[i].getDate()}`
-        
+        labels[i] = `${labels[i].getFullYear()}/${labels[i].getMonth() + 1}/${labels[i].getDate()}` 
       }
     },
-
     init() {
       // initialize the view and draw the frame
       this.canvas = d3.select('#canvas')
@@ -152,7 +146,6 @@ function View(init = false, smallSize = false) {
   }
 
   if (init) {
-    obj.smallSize = smallSize
     obj.init()
   }
 

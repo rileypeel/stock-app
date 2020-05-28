@@ -125,7 +125,11 @@ class Quote(APIView):
 
     def get(self, request, ticker):
         """Get quote for ticker"""
-        data = fh.get_fh_quote(ticker)
+        ticker = ticker.upper()
+        try:
+            data = fh.quote(ticker)
+        except APIException:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(data=data, status=status.HTTP_200_OK)
 
 class CompanyInfo(APIView):
@@ -135,10 +139,10 @@ class CompanyInfo(APIView):
 
     def get(self, request, ticker):
         """get info for ticker"""
-        data = get_data(ticker)
-        if data is None:
+        try:
+            data = fh.get_company_profile(ticker)
+        except APIException:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        print(data)
         return Response(status=status.HTTP_200_OK, data=data)
 
 
@@ -167,11 +171,22 @@ class StockSearch(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, ticker_str):
-        """ query database for stocks matching given string"""
+    def get(self, request, search_str):
+        """query database for stocks matching given string"""
         try: 
-            stocks = Stock.objects.filter(ticker__istartswith=ticker_str)
-        except:
+            tickers = Stock.objects.filter(ticker__istartswith=search_str)
+        except Stock.DoesNotExist:
+            print("No matching tickers found.")
+        else:
+            stocks = tickers
+        try: 
+            names = Stock.objects.filter(name__istartswith=search_str)
+        except Stock.DoesNotExist:
+            print("No matching company names found.")
+        else: 
+            stocks = stocks.union(names) if stocks else names
+
+        if not stocks:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = StockSerializer(stocks, many=True)
         return Response(status=status.HTTP_200_OK, data=serializer.data)

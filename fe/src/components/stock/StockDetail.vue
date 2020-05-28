@@ -5,23 +5,27 @@
         <el-tab-pane name="Chart" label="Chart" >
           <el-row>
             <el-col :span="6">
-              <h1>{{ $route.params.name }}</h1>
-              <h2>{{ $route.params.ticker }}</h2>
-              <h3>Latest price: {{ quote }}</h3>
+              <h1>{{ ticker.cfg.name }}</h1>
+              <h2>{{ ticker.cfg.ticker }}</h2>
+              <h3>Latest price: {{ ticker.cfg.stockData.quote }}</h3>
               <h4><router-link to='/transaction'>Trade this stock</router-link></h4>
             </el-col>
             <el-col :span="18">
-              <Ticker :tickerSym="$route.params.ticker" ref="chartUnique" class="ticker-style"/>
+              <Ticker :ticker="ticker" :size="1" ref="chartUnique" class="ticker-style"/>
             </el-col>
           </el-row>
           <h3 class="header-margin">Basic price and company info</h3>
           <el-row class="data">
-            <el-col v-for="(item, name) in info" :key="item" :span="8">
-              <p class=" container grey-border">{{ name }}: <span class="regular-font">{{ item }}</span></p>
+            <el-col v-for="(item, name) in ticker.cfg.stockData.info" :key="item.id" :span="8">
+              <el-card class="container">{{ name }}: 
+                <span class="regular-font">
+                  {{ item }}
+                </span>
+              </el-card>
             </el-col>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane name="Financials" label="Finanacials">
+        <el-tab-pane name="Financials" label="Financials">
           COMING SOON....
         </el-tab-pane>
         <el-tab-pane name="Research" label="Research">
@@ -36,9 +40,8 @@
 </template>
 
 <script>
-import tickerService from '../services/ticker.js'
-import Ticker from './ticker/Ticker.vue'
-
+import Stock from '../../services/realTicker'
+import Ticker from '../ticker/Ticker.vue'
 export default {
   name: "StockDetail",
   components: {
@@ -46,31 +49,19 @@ export default {
   },
   data () {
     return {
-      info: false,
       ticker: '',
       height: true,
       tabName: 'Chart',
-      quote: 'N/A'
+      info: true,
+      stockData: {
+        info: {}
+      },
+      view: '',
+      stockSymbol: ''
     }
   },
-  methods: {
-    getInfo() {
-      tickerService.stockInfo(this.ticker).then((data) => {
-        if(data) {
-          this.info = data;
-        }
-      })
-    },
-    getQuote() {
-      tickerService.getQuote(this.ticker).then((data) => {
-        this.quote = data['c']
-      })
-    }
-  },
-  mounted: function() {
-    this.ticker = this.$route.params.ticker
-    this.getInfo()
-    this.getQuote()
+  beforeMount: function() {
+    this.ticker = Stock(this.$route.params.ticker) 
   }
 }
 </script>
@@ -92,6 +83,7 @@ export default {
 .container {
   display: flex;
   justify-content: space-between;
+  height: 60px;
 }
 
 .regular-font {

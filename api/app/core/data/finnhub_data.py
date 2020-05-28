@@ -63,13 +63,20 @@ def get_fh_quote(ticker):
     }
     try:
         res = requests.get(url=f"{FINNHUB_QUOTE_URL}", params=params)
-    except requests.exceptions.RequestException
+    except requests.exceptions.RequestException:
         raise APIException("Failed to connect to Finnhub API")
 
     if res.status_code == 200:
         return json.loads(res.text)
     raise APIException(f"Failed to retrieve data from Finnhub API. Code: {res.status_code}")
 
+def quote(ticker):
+    """Call get_fh_quote and format returned data"""
+    quote_data = get_fh_quote(ticker)
+    if 'c' in quote_data.keys():
+        return {'ticker': ticker, 'quote': quote_data['c']}
+    raise APIException(f"Failed to retrieve data from Finnhub API.")
+    
 def get_indices_quote():
     """Get quotes for list of major indices"""
     quote_data = {}
@@ -83,13 +90,26 @@ def get_indices_quote():
 def get_news():
     """Get some general news from finnhub api"""
     params = {
-        'token': FINNHUB_KEY
+        'token': FINNHUB_KEY,
     }
     try: 
         res = requests.get(url=f"{FINNHUB_BASE_URL}news", params=params)
     except requests.exceptions.RequestException as ex:
         raise APIException("Failed to connect to Finnhub API")
+    if res.status_code == 200:
+        return res.json()
+    raise APIException(f"Failed to retrieve data from Finnhub API. Code: {res.status_code}")
 
+def get_company_profile(ticker):
+    """Get company profile for ticker from finnhub api"""
+    params = {
+        'token': FINNHUB_KEY,
+        'symbol': ticker
+    }
+    try:
+        res = requests.get(url=f"{FINNHUB_BASE_URL}stock/profile2", params=params)
+    except requests.exceptions.RequestException as ex:
+        raise APIException("Failed to connect to finnhub api.")
     if res.status_code == 200:
         return res.json()
     raise APIException(f"Failed to retrieve data from Finnhub API. Code: {res.status_code}")

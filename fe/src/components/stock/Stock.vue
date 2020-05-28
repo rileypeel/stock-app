@@ -15,7 +15,7 @@
     </el-row>
     <el-row>
       <el-col :span="8">
-        <Ticker :small="true" :showOptions="false" :tickerSym="'SPY'"/>
+        <Ticker :ticker="ticker" :size=".6" :showOptions="false"/>
       </el-col>
       <el-col :span="16">
         <h4 class="overview">Daily Market Overview</h4>
@@ -45,8 +45,10 @@
 </template>
 
 <script>
-import Ticker from './ticker/Ticker.vue'
-import tickerService from '../services/ticker.js'
+import Stock from '../../services/realTicker'
+import Ticker from '../ticker/Ticker.vue'
+
+import tickerService from '../../services/ticker.js'
 export default {
   name: "Stock",
   components: {
@@ -59,20 +61,11 @@ export default {
       message: '',
       userinput: '',
       news: '',
-      indexPrices: ''
+      indexPrices: '',
+      ticker: {}
     }
   },
   methods: {
-    search(symbol) {
-      tickerService.getTicker(symbol).then((data) => {
-        if(data) {
-          this.stock = data
-          this.$router.push({ name: 'StockDetail', params: { ticker: data.ticker }})
-        } else {
-          this.message = 'Symbol not found.'
-        }
-      })
-    },
     querySearch(queryString, callback) {
       tickerService.search(queryString).then((data) => {
         callback(data)
@@ -92,9 +85,10 @@ export default {
       })
     }
   },
-  mounted() {
+  beforeMount() {
     this.getNews()
     this.getIndexQuotes()
+    this.ticker = Stock('SPY', false) //initialize ticker
   }
 }
 </script>

@@ -4,18 +4,17 @@
       <Options/>
     </el-row>
     <el-row>
-      <Header :small="small" />
-      <svg v-bind:class="classObject" id="canvas"></svg>
+      <Header :size="size" />
+      <svg v-bind:style="styleObject" id="canvas"></svg>
     </el-row>
   </div>
 </template>
 
 <script>
 import View from '../../services/view/view'
-import Ticker from '../../services/realTicker.js'
 import Header from './Header.vue'
 import Options from './Options.vue'
-
+import * as constants from '../../constants/view'
 export default {
   name: "Ticker",
   components: {
@@ -24,11 +23,14 @@ export default {
   },
   data () {
     return {
-      ticker: ''
     }
   },
   props: {
-    tickerSym: {
+    ticker: {
+      type: Object,
+      default: null
+    },
+    stockSymbol: {
       type: String, 
       default: 'TSLA'
     },
@@ -36,32 +38,34 @@ export default {
       type: Boolean,
       default: true
     },
-    small: {
-      type: Boolean,
-      default: false
+    size: {
+      type: Number,
+      default: 1
     }
   },
   mounted() {
-    var view = View(true, this.small)
-    this.ticker = Ticker(this.tickerSym, this.small)
+    
+    var view = View(true, this.size)
+    view.setSize(this.size)
     this.ticker.subscribe(view)
     view.setTicker(this.ticker)
-    view.cfg.period = this.ticker.cfg.period
-    view.cfg.startDate = this.ticker.cfg.startDate //do this in view RILEY 
-    if(this.small) {
+    if (this.size < 1) {
       view.cfg.type = 'line' 
+      view.cfg.period = constants.PERIOD_FIVE_MINUTE
+      view.cfg.timeframe = constants.ONE_DAY 
+      view.update()
     }
+    
   },
   computed: {
-    classObject: function() {
+    styleObject: function() {
+      var width = 600 * this.size
+      var height = 100 + (300 * this.size)
       return {
-        sml: this.small,
-        lg: !this.small
+        height: `${height}px`,
+        width: `${width}px`
       }
     }
-  },
-  destroyed() {
-    this.ticker.halt()
   }
 }
 </script>
@@ -80,15 +84,5 @@ export default {
   border-bottom-right-radius: 10px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 8);
   margin-bottom: 20px;
-}
-
-.lg {
-  width: 600px;
-  height: 400px;
-}
-
-.sml {
-  width: 400px;
-  height: 275px;
 }
 </style>

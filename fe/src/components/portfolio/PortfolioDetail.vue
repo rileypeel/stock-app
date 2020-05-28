@@ -1,12 +1,12 @@
 <template>
   <div class="portfolioDetail">
-    <h1>{{ portfolioName }}</h1>
-    <router-link to="/transaction"> Trade stocks</router-link>
-    <h2>Current value: {{ cashBalance + currentValue }} </h2>
+    <h1>{{ portfolio.name }}</h1>
+    <router-link to="/transaction">Trade stocks</router-link>
+    <h2>Current value: {{ (portfolio.cash + portfolio.value).toFixed(2) }} </h2>
     <el-collapse accordion>
       <el-collapse-item title="Portfolio Holdings">
-        <el-table v-if="noHoldings"
-          :data="holdings"
+        <el-table v-if="portfolio.holdings.length"
+          :data="portfolio.holdings"
           stripe
           style="width: 100%">
           <el-table-column
@@ -22,7 +22,7 @@
             width="100">
           </el-table-column>
           <el-table-column
-            prop="average_cost"
+            prop="bookCost"
             label="Book Cost"
             width="100">
           </el-table-column>
@@ -49,8 +49,8 @@
         </p>
       </el-collapse-item>
       <el-collapse-item title="Transactions">
-        <el-table v-if="noTrans"
-          :data="transactions"
+        <el-table v-if="portfolio.transactions.length"
+          :data="portfolio.transactions"
           stripe
           style="width: 100%"
           >
@@ -81,6 +81,9 @@
             prop="price"
             label="Price"
             width="100">
+            <template slot-scope="scope">
+              {{ parseFloat(scope.row.price).toFixed(2) }}
+            </template>
           </el-table-column>
           <el-table-column
             prop="number_of_shares"
@@ -97,58 +100,23 @@
 </template>
 
 <script>
-import tickerService from '../services/ticker.js'
-import portfolioService from '../services/portfolio.js';
-
+//import tickerService from '../../services/ticker.js'
+//import portfolioService from '../../services/portfolioHttp.js'
+import Portfolios from '../../services/view/portfolio'
 export default {
   name: "PortfolioDetail",
   data() {
     return {
-      portfolioName: this.$route.query.name,
-      cashBalance: 0,
-      currentValue: 0,
-      transactions: [],
-      holdings: [],
-      portfolioId: this.$route.params.id,
-      noTrans: false,
-      noHoldings: false
+      noTrans: true,
+      noHoldings: true,
+      portfolios: '',
+      portfolio: {}
     }
   },
-  methods: {
-    getTransactions() {
-      portfolioService.getTransactions(this.portfolioId).then((data) => {
-        this.transactions = data;
-        this.noTrans = this.transactions.length
-      })
-    },
-    getHoldings() {
-      portfolioService.getHoldings(this.portfolioId).then((data) => {
-        this.currentValue = 0
-        this.holdings = data
-        this.holdings.forEach((holding) => {
-          tickerService.getQuote(holding.stock).then((data) => {
-            this.noHoldings = this.holdings.length
-            holding['latestPrice'] = data['c']
-            holding['marketValue'] = holding.number_of_shares*data['c']
-            holding['percentChange'] = (holding['marketValue'] - holding['average_cost'])/holding['average_cost']*100;
-            holding['percentChange'] = holding['percentChange'].toFixed(2);
-            this.currentValue += holding['marketValue']
-            holding['marketValue'] = holding['marketValue'].toFixed(2)
-          });
-        });
-      });
-    },
-    getPortfolioDetail() {
-      portfolioService.getPortfolio(this.portfolioId).then((data) => {
-        this.portfolioName = data['name']
-        this.cashBalance = parseInt(data['balance'])
-      });   
-    }
-  },
-  mounted: function() {
-    this.getTransactions();
-    this.getHoldings();
-    this.getPortfolioDetail();
+  beforeMount: function() {
+    this.portfolios = Portfolios()
+    this.portfolios.getPortfolioDetail(this.$route.params.id)
+    this.portfolio = this.portfolios.currentPortfolio
   }
 }
 </script>

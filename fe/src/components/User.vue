@@ -64,13 +64,13 @@ export default {
         inputType: 'password'
       }).then((passwordInput) => {
         userService.patchUser({password: passwordInput.value}).then((res) => {
-          if(res == 201) {
+          if (res == 201) {
             this.$notify({
               title: 'Success',
               message: 'You have successfully changed the password',
               type: 'success',
               duration: 2000
-            });
+            })
           }
         })
       }).catch(() => {
@@ -80,16 +80,12 @@ export default {
   },
   mounted: function() {
     userService.getProfilePic().then((data) => {
-      if(data) {
-        this.url = '0.0.0.0:8000'.concat(data['profile_pic'])
-        this.url = data
-      } else {
-        this.url = require('../../public/default-profile.png')
-      }
-    });
+      if (data) this.url = data
+      else this.url = require('../../public/default-profile.png')
+    })
     userService.getUser().then((data) => {
-      this.user = data;
-      this.loading = false;
+      this.user = data
+      this.loading = false
     })
   }
 }

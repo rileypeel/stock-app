@@ -44,7 +44,6 @@ def get_company_info(simfin_id):
 	raise APIException(f"No data returned from Simfin API")
 
 def get_data(ticker):
-
 	simfin_id = get_simfin_id(ticker)
 	if simfin_id:
 		data = get_company_info(simfin_id)

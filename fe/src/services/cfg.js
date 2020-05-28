@@ -18,9 +18,10 @@ const rectWidth = rectAndSpacingWidth - rectSpace
 function Cfg() {
 
   obj = obj || {
-    period: cfg.PERIOD_DAILY,
     showTime: false,
     startDate: '1577836800',
+    timeframe: cfg.ONE_YEAR,
+    period: cfg.PERIOD_DAILY,
     count: 40,
     type: cfg.CHART_BAR,
     exchange: 'NASDAQ',

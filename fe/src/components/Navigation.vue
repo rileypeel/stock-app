@@ -31,7 +31,7 @@ export default {
     },
     logout() {
       userService.logout()
-      this.$router.push('Login');
+      this.$router.push('Login')
     },
     show(route) {
       this.showNav = !['Login', 'Register', 'Home'].includes(route.name)
@@ -39,11 +39,11 @@ export default {
   },
   mounted: function() {
     userService.getProfilePic().then((data) => {
-      if(data) {
+      if (data) {
         this.profileImgUrl = data
       }
     })
-    this.show(this.$route);
+    this.show(this.$route)
   }
 }
 </script>
