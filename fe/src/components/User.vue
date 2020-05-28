@@ -80,6 +80,7 @@ export default {
   },
   mounted: function() {
     userService.getProfilePic().then((data) => {
+      console.log(data)
       if (data) this.url = data
       else this.url = require('../../public/default-profile.png')
     })
