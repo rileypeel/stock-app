@@ -34,11 +34,12 @@ function Portfolios(init = false) {
       portfolioService.getHoldings(this.currentPortfolio.id).then((data) => {
         this.currentPortfolio.value = 0
         this.currentPortfolio.holdings = data
+        console.log(JSON.stringify(data))
         this.currentPortfolio.holdings.forEach((holding) => {
           tickerService.getQuote(holding.stock).then((data) => {
             holding['latestPrice'] = data['quote']
             holding['marketValue'] = holding.number_of_shares * data['quote']
-            holding['bookCost'] = holding.average_cost * holding.number_of_shares
+            holding['bookCost'] = parseFloat(holding.average_cost)
             holding['percentChange'] = (holding['marketValue'] - holding['bookCost']) / holding['bookCost'] * 100
             holding['percentChange'] = holding['percentChange'].toFixed(2)
             this.currentPortfolio.value += holding['marketValue']

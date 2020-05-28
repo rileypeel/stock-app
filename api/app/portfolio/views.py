@@ -180,7 +180,7 @@ class TransactionView(APIView):
                         portfolio=portfolio,
                         stock=stock,
                         number_of_shares=num_shares,
-                        average_cost=price
+                        average_cost=price * num_shares
                     )
                 else:
                     holding.number_of_shares = int(
