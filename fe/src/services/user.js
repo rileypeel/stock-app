@@ -1,5 +1,5 @@
 // service for handling user auth and information
-import {BASE_URL } from '../constants/view.js'
+
 // constants
 import httpService from '../services/http.js'
 // private variables and functions
@@ -22,9 +22,7 @@ const userService = {
   },
   async getProfilePic() {
     var response = await httpService.get('api/user/image/') 
-    if (response) {
-      response = BASE_URL + response['profile_pic']
-    }
+    if (response) response = response['profile_pic']
     return response 
   },
   async postProfilePic(file) {

@@ -43,6 +43,10 @@ class PortfolioSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'balance')
         read_only_fields = ('id',)
 
+    def validate_balance(self, value):
+        if value < 0:
+            raise serializers.ValidationError("balance cannot be less than zero")
+        return value
 
 class StockSerializer(serializers.ModelSerializer):
     """Serializer for stock objects"""
