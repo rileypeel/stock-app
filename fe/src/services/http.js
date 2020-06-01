@@ -3,7 +3,7 @@
 // constants
 
 // api address
-const api = 'http://0.0.0.0:8000/'
+const api = 'http://3.23.61.95:8000/'
 
 // http methods
 const httpGet = 'GET'
