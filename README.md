@@ -7,7 +7,8 @@ This is a Stock Market Application I created with some help from my [friend](htt
 
 If you want to run the app locally clone down the repo and enter the following commands:
 
-To make migrations and add stocks to database:
+To make migrations and add stocks to database:  
+
 `docker-compose run app sh -c "python manage.py makemigrations && python manage.py add_stocks"`
 
 To run development server:
