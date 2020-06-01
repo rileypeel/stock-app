@@ -16,9 +16,9 @@ services:
   db:
     image: postgres:10-alpine
     environment:
-      POSTGRES_USER=TESTUSER
-      POSTGRES_PASSWORD=TESTPASS
-      POSTGRES_DB=TESTNAME
+      - POSTGRES_USER=TESTUSER
+      - POSTGRES_PASSWORD=TESTPASS
+      - POSTGRES_DB=TESTNAME
   fe:
     build:
       context: ./fe
