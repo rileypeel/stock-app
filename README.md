@@ -5,7 +5,7 @@ This is a Stock Market Application I created with some help from my [friend](htt
 
 ### Running the app locally
 
-If you want to run the app locally clone down the repo and enter the following commands:
+If you want to run the app locally clone the repo and enter the following commands:
 
 Build containers:  
 `docker-compose build`
@@ -13,16 +13,16 @@ Build containers:
 To make migrations and add stocks to database:  
 `docker-compose run app sh -c "python manage.py wait_for_db && python manage.py makemigrations"`
 
-To run development server:
+To run development server:  
 `docker-compose up` 
 
 To add stocks to the database and give the app access to real data, you can sign up for a free account at [finnhub](https://finnhub.io/), and add your API key to .env.dev, with the name FINNHUB_KEY.
 
-To then add stocks to the database run:
+To then add stocks to the database run:  
 `docker-compose run app sh -c "python manage.py add_stocks"`
 
 ### Additional Commands
 
-To run backend tests: 
+To run backend tests:   
 `docker-compose run app sh -c "python manage.py test"`
 
