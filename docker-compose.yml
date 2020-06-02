@@ -26,5 +26,4 @@ services:
       - "8080:8080"
     volumes:
       - ./fe:/fe
-      - ./fe:/fe
     command: sh -c "npm run serve"
